@@ -18,7 +18,10 @@ $ python3 db/init_db.py # se debe ejecuta asi, para que te genere en la carpeta 
 
 ### Ejecutar el proyecto
 ```sh
-$ flask run --host=0.0.0.0 --port 5001 --debug
+$ flask run --host=0.0.0.0 --port 5001 --debug 
+
+# tb podemos ejecutar el run.sh que se encuentra en la consola, es lo mismo
+$ bash run.sh
 
 ```
 
