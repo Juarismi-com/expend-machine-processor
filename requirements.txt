@@ -1,2 +1,4 @@
 Flask==2.2.5
 PyMySQL==1.1.0
+adafruit-circuitpython-pca9685==3.4.3
+adafruit-blinka==8.28.0
