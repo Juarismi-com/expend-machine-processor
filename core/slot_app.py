@@ -1,6 +1,6 @@
 from libs.slots import Slots
-from db import obtener_productos
-# Crear instancia
+from libs.db import get_product_by_slot
+
 
 def initialize_slot():
     try:
@@ -29,5 +29,5 @@ def active_slot(key):
     #slots = Slots()
     #slots.enable_outputs(True)
     #slots.activate_slot(key, 3.0)
-    producto = obtener_productos(key)
+    producto = get_product_by_slot(key)
     return producto

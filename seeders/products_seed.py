@@ -5,9 +5,9 @@ cursor = conn.cursor()
 
 
 cursor.executemany("INSERT INTO productos (nombre, precio, stock) VALUES (?, ?, ?)", [
-    ("Coca", 1500.00, 10),
-    ("Fanta", 20.00, 50),
-    ("Listado", 35.00, 30)
+    ("Coca", 1500.00, 10, 1),
+    ("Fanta", 20.00, 50, 2),
+    ("Sprite", 35.00, 30, 3)
 ])
 
 conn.commit()

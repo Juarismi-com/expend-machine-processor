@@ -14,6 +14,6 @@ def signal(key):
     if producto:
         return jsonify(producto)
     else:
-        abort(404, description=f"Producto con id {producto_id} no encontrado")
+        abort(404, description=f"Producto con id {key} no encontrado")
 
     
