@@ -31,13 +31,9 @@ def get_external_data():
         'montoVuelto': 20
     }
 
-   
-
     try:
-        response = requests.post('https://192.168.100.15:3000/pos/venta-qr', payload)
-
         # Make the POST request
-        response = requests.post(url, json=payload, timeout=5)
+        response = requests.post('https://192.168.100.15:3000/pos/venta-qr', json=payload, timeout=5)
 
         # Return the response from the external API
         return jsonify({
