@@ -19,4 +19,30 @@ def signal(key):
     else:
         abort(404, description=f"Producto con id {key} no encontrado")
 
-    
+
+@app.route('/payment/bancard/qr')
+def get_external_data():
+    # Make a GET request to an external API
+
+    payload = {
+        'facturaNro': 12345,
+        'monto': 10,
+        'montoVuelto': 20
+    }
+
+   
+
+    try:
+        response = requests.post('https://192.168.100.15:3000/pos/venta-qr', payload)
+
+        # Make the POST request
+        response = requests.post(url, json=payload, timeout=5)
+
+        # Return the response from the external API
+        return jsonify({
+            'status_code': response.status_code,
+            'response': response.json()
+        })
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': str(e)}), 500
