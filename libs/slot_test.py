@@ -25,7 +25,7 @@ relays = {
 relay_pins = [17, 18, 27, 22, 23, 24, 12, 16, 4, 5, 6, 13, 19, 26, 20, 21]
 
 # Configuración inicial de los pines
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(False)
 
 #for gpio_pin in relays.values():
@@ -42,7 +42,7 @@ def activar_reles_secuencialmente(tiempo_encendido=1):
       time.sleep(5)
       GPIO.output(pin, GPIO.LOW)
       print(f"{nombre} (GPIO {pin}) inicializado en high (relé prendido)")
-      GPIO.cleanup()
+      #GPIO.cleanup()
       
    """GPIO.setup(17, GPIO.OUT)
    GPIO.output(pin, GPIO.LOW)
