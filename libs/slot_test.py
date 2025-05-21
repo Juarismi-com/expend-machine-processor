@@ -5,23 +5,24 @@ import time
 
 # Diccionario: nombre del relé → número de GPIO
 relays = {
-   "rele_1": 4,
-   "rele_2": 17,
+   "rele_1": 17,
+   "rele_2": 18,
    "rele_3": 27,
    "rele_4": 22,
-   "rele_5": 5,
-   "rele_6": 6,
-   "rele_7": 13,
-   "rele_8": 19,
-   "rele_9": 26,
-   "rele_10": 18,
-   "rele_11": 23,
-   "rele_12": 24,
-   "rele_13": 25,
-   "rele_14": 12,
-   "rele_15": 16,
-   "rele_16": 20,
+   "rele_5": 23,
+   "rele_6": 24,
+   "rele_7": 12,
+   "rele_8": 16,
+   "rele_9": 4,
+   "rele_10": 5,
+   "rele_11": 6,
+   "rele_12": 13,
+   "rele_13": 19,
+   "rele_14": 26,
+   "rele_15": 20,
+   "rele_16": 21
 }
+
 
 # Configuración inicial de los pines
 GPIO.setmode(GPIO.BCM)
