@@ -30,15 +30,15 @@ GPIO.setwarnings(False)
 
 for gpio_pin in relays.values():
    GPIO.setup(gpio_pin, GPIO.OUT)
-   GPIO.output(gpio_pin, GPIO.LOW)  # HIGH para desactivar (si el relé es activo en LOW)
+   GPIO.output(gpio_pin, GPIO.HIGH)  # HIGH para desactivar (si el relé es activo en LOW)
 
 def activar_reles_secuencialmente(tiempo_encendido=1):
    """Activa cada relé uno por uno durante X segundos, luego lo apaga."""
    for nombre, gpio in relays.items():
       print(nombre)
-      GPIO.output(gpio, GPIO.HIGH)  # LOW para activar el relé
-      time.sleep(tiempo_encendido)
-      GPIO.output(gpio, GPIO.LOW)  # Apagar el relé
+      GPIO.output(gpio, GPIO.LOW)  # LOW para activar el relé
+      time.sleep(3)
+      GPIO.output(gpio, GPIO.HIGH)  # Apagar el relé
       print("------")
       time.sleep(10)
 
