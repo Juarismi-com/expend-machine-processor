@@ -35,15 +35,12 @@ for gpio_pin in relays.values():
 def activar_reles_secuencialmente(tiempo_encendido=1):
    """Activa cada relé uno por uno durante X segundos, luego lo apaga."""
    #GPIO.setup(pin, GPIO.OUT)
-   #for nombre, pin in relays.items():
-   GPIO.setup(17, GPIO.OUT, initial=GPIO.HIGH)
-   GPIO.output(17, GPIO.LOW)
-   #print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé apagado)")
-   print("ok")
-   #time.sleep(5)
-      #GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
-      #GPIO.output(pin, GPIO.HIGH)
-   
+   for nombre, pin in relays.items():
+      GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
+      GPIO.output(pin, GPIO.LOW)
+      print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé apagado)")
+      time.sleep(5)
+      
    """GPIO.setup(17, GPIO.OUT)
    GPIO.output(pin, GPIO.LOW)
    estados = [GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH]
