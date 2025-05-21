@@ -45,10 +45,10 @@ def activar_reles_secuencialmente(tiempo_encendido=1):
 
       GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
       GPIO.output(pin, GPIO.LOW)
-      print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé prendido)")
+      #print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé prendido)")
       time.sleep(5)
       GPIO.output(pin, GPIO.LOW)
-      print(f"{nombre} (GPIO {pin}) inicializado en high (relé prendido)")
+      #print(f"{nombre} (GPIO {pin}) inicializado en high (relé prendido)")
       #GPIO.cleanup()
    except RuntimeError:
       print("\nInterrumpido por el usuario.")
