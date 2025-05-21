@@ -40,7 +40,7 @@ def activar_reles_secuencialmente(tiempo_encendido=1):
       GPIO.output(pin, GPIO.LOW)
       print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé apagado)")
       time.sleep(5)
-      GPIO.setup(pin, GPIO.OUT, initial=GPIO.HIGHT)
+      GPIO.setup(pin, GPIO.OUT, initial=GPIO.HIGH)
       GPIO.output(pin, GPIO.HIGH)
 
 # Ejecutar si se llama directamente
