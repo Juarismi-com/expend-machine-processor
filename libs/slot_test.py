@@ -48,6 +48,12 @@ def activar_reles_secuencialmente(tiempo_encendido=1):
       #print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé prendido)")
       time.sleep(5)
       GPIO.output(pin, GPIO.LOW)
+
+      estados = [GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH]
+
+      for i, estado in enumerate(estados):
+            GPIO.output(self.relay_pins[i], estado)
+
       #print(f"{nombre} (GPIO {pin}) inicializado en high (relé prendido)")
       #GPIO.cleanup()
    except RuntimeError:
