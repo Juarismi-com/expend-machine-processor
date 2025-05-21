@@ -29,7 +29,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 for gpio_pin in relays.values():
-   GPIO.setup(gpio_pin, GPIO.OUT, initial=GPIO.HIGH)
+   GPIO.setup(gpio_pin, GPIO.OUT, initial=GPIO.LOW)
    print(GPIO.OUT)
 #   GPIO.output(gpio_pin, GPIO.HIGH)  # HIGH para desactivar (si el relé es activo en LOW)
 
