@@ -22,7 +22,7 @@ relays = {
    "rele_15": 20,
    "rele_16": 21
 }
-
+relay_pins = [17, 18, 27, 22, 23, 24, 12, 16, 4, 5, 6, 13, 19, 26, 20, 21]
 
 # Configuración inicial de los pines
 GPIO.setmode(GPIO.BCM)
@@ -35,13 +35,20 @@ GPIO.setwarnings(False)
 def activar_reles_secuencialmente(tiempo_encendido=1):
    """Activa cada relé uno por uno durante X segundos, luego lo apaga."""
    #GPIO.setup(pin, GPIO.OUT)
-   for nombre, pin in relays.items():
+   """for nombre, pin in relays.items():
       GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
       GPIO.output(pin, GPIO.LOW)
       print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé apagado)")
       time.sleep(5)
       GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
       GPIO.output(pin, GPIO.HIGH)
+   """
+   GPIO.setup(17, GPIO.OUT)
+   GPIO.output(pin, GPIO.LOW)
+   estados = [GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH]
+   
+   for i, estado in enumerate(estados):
+      GPIO.output(17, estado)
 
 # Ejecutar si se llama directamente
 if __name__ == "__main__":
