@@ -36,7 +36,7 @@ def activar_reles_secuencialmente(tiempo_encendido=1):
    """Activa cada relé uno por uno durante X segundos, luego lo apaga."""
    for nombre, pin in relays.items():
       GPIO.setup(pin, GPIO.OUT)
-      GPIO.output(pin, GPIO.HIGH)
+      GPIO.output(pin, GPIO.LOW)
       print(f"{nombre} (GPIO {pin}) inicializado en HIGH (relé apagado)")
       time.sleep(5)
 
