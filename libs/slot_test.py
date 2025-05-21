@@ -37,27 +37,30 @@ def activar_reles_secuencialmente(tiempo_encendido=1):
    #GPIO.setup(pin, GPIO.OUT)
 
    
-   #for nombre, pin in relays.items():
-   pin = 17
-   pin2 = 12
-   try:
-      GPIO.setmode(GPIO.BCM)
-      GPIO.setwarnings(False)
+   
 
-      GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
-      GPIO.setup(pin2, GPIO.OUT, initial=GPIO.LOW)
-      GPIO.output(pin, GPIO.LOW)
-      GPIO.output(pin2, GPIO.LOW)
-      #print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé prendido)")
-      time.sleep(30)
 
-      #print(f"{nombre} (GPIO {pin}) inicializado en high (relé prendido)")
-      #GPIO.cleanup()
-   except RuntimeError as e:
-      print("\nInterrumpido por el usuario.")
-      print(e)
-   finally:
-      GPIO.cleanup()
+      for nombre, pin in relays.items():
+         for nombre2, pin2 in relays.items():
+            try:
+               GPIO.setmode(GPIO.BCM)
+               GPIO.setwarnings(False)
+
+               GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
+               GPIO.setup(pin2, GPIO.OUT, initial=GPIO.LOW)
+               GPIO.output(pin, GPIO.LOW)
+               GPIO.output(pin2, GPIO.LOW)
+               #print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé prendido)")
+               time.sleep(1)
+
+            #print(f"{nombre} (GPIO {pin}) inicializado en high (relé prendido)")
+            #GPIO.cleanup()
+         except RuntimeError as e:
+            print("\nInterrumpido por el usuario.")
+            print(e)
+         finally:
+            print("finaly")
+            GPIO.cleanup()
       
       
       
