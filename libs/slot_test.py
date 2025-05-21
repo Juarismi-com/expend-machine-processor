@@ -35,14 +35,23 @@ GPIO.setwarnings(False)
 def activar_reles_secuencialmente(tiempo_encendido=1):
    """Activa cada relé uno por uno durante X segundos, luego lo apaga."""
    #GPIO.setup(pin, GPIO.OUT)
+
+   
    for nombre, pin in relays.items():
-      GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
-      GPIO.output(pin, GPIO.LOW)
-      print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé prendido)")
-      time.sleep(5)
-      GPIO.output(pin, GPIO.LOW)
-      print(f"{nombre} (GPIO {pin}) inicializado en high (relé prendido)")
-      #GPIO.cleanup()
+      try:
+         GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
+         GPIO.output(pin, GPIO.LOW)
+         print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé prendido)")
+         time.sleep(5)
+         GPIO.output(pin, GPIO.LOW)
+         print(f"{nombre} (GPIO {pin}) inicializado en high (relé prendido)")
+         #GPIO.cleanup()
+      except RuntimeError:
+         print("\nInterrumpido por el usuario.")
+      finally:
+         GPIO.cleanup()
+      
+      
       
    """GPIO.setup(17, GPIO.OUT)
    GPIO.output(pin, GPIO.LOW)
