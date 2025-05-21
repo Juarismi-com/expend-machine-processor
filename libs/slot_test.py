@@ -52,8 +52,9 @@ def activar_reles_secuencialmente(tiempo_encendido=1):
 
       #print(f"{nombre} (GPIO {pin}) inicializado en high (relé prendido)")
       #GPIO.cleanup()
-   except RuntimeError:
+   except RuntimeError as e:
       print("\nInterrumpido por el usuario.")
+      print(e)
    finally:
       GPIO.cleanup()
       
