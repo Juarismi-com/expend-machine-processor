@@ -49,7 +49,7 @@ def activar_reles_secuencialmente(tiempo_encendido=1):
    
    for i, estado in enumerate(estados):
       GPIO.output(17, estado)"""
-   GPIO.output(21, GPIO.LOW)
+   GPIO.output(17, GPIO.LOW)
 
 # Ejecutar si se llama directamente
 if __name__ == "__main__":
