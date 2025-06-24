@@ -24,6 +24,8 @@ relays = {
 }
 relay_pins = [17, 18, 27, 22, 23, 24, 12, 16, 4, 5, 6, 13, 19, 26, 20, 21]
 
+
+
 # Configuración inicial de los pines
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(True)

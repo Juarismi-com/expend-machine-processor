@@ -1,26 +1,21 @@
 from flask import Flask, jsonify, abort
-from core.slot_app import active_slot
 from flask_cors import CORS
-import requests
+from database.conn import get_db, close_db, init_db
+from routes.vending_route import bp as vending_bp
 
 app = Flask(__name__)
 CORS(app) 
 
+app.register_blueprint(vending_bp, url_prefix="/vending")
+
+
 @app.route("/")
 def hello_world():
-    return "api"
+    return "api v1"
 
 
-@app.route("/signal/<int:key>")
-def signal(key):
-    producto = active_slot(key)
 
-    if producto:
-        return jsonify(producto)
-    else:
-        abort(404, description=f"Producto con id {key} no encontrado")
-
-
+"""
 @app.route('/payment/bancard/qr')
 def get_external_data():
     # Make a GET request to an external API
@@ -43,3 +38,8 @@ def get_external_data():
 
     except requests.exceptions.RequestException as e:
         return jsonify({'error': str(e)}), 500
+"""
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
