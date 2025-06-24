@@ -11,8 +11,8 @@ $ pip3 install -r ./requirements.txt
 ## Para ejecutarlo desde rasperry 
 $ pip3 install -r ./requirements-pi.txt
 
-## Inicializar la base de datos
-$ python3 db/init_db.py # se debe ejecuta asi, para que te genere en la carpeta raiz, desde donde se ejecuta python, no aplicar 'cd' para ingresar a la carpeta
+## Inicializar la base de datos, luego de activar el .env
+$ flask init-db
 ```
 
 
@@ -25,7 +25,7 @@ $ bash run.sh
 
 ```
 
-### Verificar internamente los datos en el sqlite
+### Verificar internamente los datos en el sqlitea
 ```sh
 $ sqlite3 db/expend_local.db
 $ .tables # ver listado de tablas generadas
@@ -42,11 +42,18 @@ Table productos {
   nombre TEXT
 }
 
+Table maquinas {
+  id INTEGER [pk, increment]
+  uuid TEXT
+  local_id INTEGER
+}
+
 Table slot_config {
   id INTEGER [pk, increment]
-  slot_num INTEGER [unique]
+  slot_num INTEGER 
   fila INTEGER
   columna INTEGER
+  activo BOOLEAN [default: true]
 }
 
 Table slots {
@@ -56,10 +63,10 @@ Table slots {
   producto_id INTEGER [ref: > productos.id]
   stock INTEGER
   stock_minimo INTEGER
+  stock_inicial INTEGER
   precio REAL
   precio_oferta REAL
   fecha_actualizacion TIMESTAMP
-
 }
 
 Table ventas {
@@ -69,7 +76,7 @@ Table ventas {
   maquina_id TEXT
   precio_venta REAL
   fecha TIMESTAMP
-  estado TEXT [default: 'pendiente']
+  estado TEXT [default: 'P']
   metodo_pago TEXT
   notas TEXT
 }
@@ -82,10 +89,12 @@ Table usuarios {
   rol TEXT [default: 'user']
 }
 
+
+## Info
 ```
+Ver paquetes instalados de python en .venv
+pip show requests
 
-
-### Seeders
-```sh
-python3 db/seeders/slot_config_seed.py
+Ver todos los pquetes instalados en env
+pip list
 ```

@@ -1,6 +1,6 @@
 from libs.slots import Slots
 from libs.db import get_product_by_slot
-from libs.slots_parallel import MaquinaExpendedora
+from services.slots_parallel import MaquinaExpendedora
 
 
 def initialize_slot():

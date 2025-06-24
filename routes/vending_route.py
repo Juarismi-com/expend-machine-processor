@@ -1,21 +1,27 @@
-from flask import Blueprint, request
-
+from flask import Blueprint, request, jsonify
+from services.vending_service import create_pending_vending, confirm_vending
 bp = Blueprint('vending', __name__)
 
 
 @bp.route("/", methods=['GET', 'POST'])
 def create_vending():
-    return request.method
+    
     if request.method != 'POST':
         return 'pass'
     
-    return "method post"
+    data = request.get_json()
+    slot_num = data.get('slot_num')
+
+    if slot_num is None:
+        return jsonify({"error":"slot_num is undefined"}), 400 
+
+    return create_pending_vending(slot_num)
 
 
-@bp.route("/<int:slot_num>")
-def update_vending(slum_num):
-    if request.method != 'PATH':
+@bp.route("/<int:vending_id>", methods=['PATCH'])
+def update_vending(vending_id):
+    if request.method != 'PATCH':
         return "pass"
-    
 
-    return slum_num
+    return confirm_vending(vending_id)
+    

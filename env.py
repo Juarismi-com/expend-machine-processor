@@ -1,0 +1,4 @@
+MACHINE_ID="10345fa2-529a-4caf-b438-259925e8bcac"
+API_URL="http://localhost:8000"
+BANCARD_API_URL="xyz"
+BANCARD_API_KEY="API_KEY"
