@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.vending_service import create_pending_vending, confirm_vending
+from services.vending_service import create_pending_vending, confirm_vending_qr, confirm_vending_card
 bp = Blueprint('vending', __name__)
 
 
@@ -18,10 +18,17 @@ def create_vending():
     return create_pending_vending(slot_num)
 
 
-@bp.route("/<int:vending_id>", methods=['PATCH'])
-def update_vending(vending_id):
+@bp.route("/<int:vending_id>/qr/<int:fila>/<int:columna>", methods=['PATCH'])
+def update_vending_qr(vending_id, fila, columna):
     if request.method != 'PATCH':
         return "pass"
 
-    return confirm_vending(vending_id)
-    
+    return confirm_vending_qr(vending_id, fila, columna)
+
+
+@bp.route("/<int:vending_id>/card", methods=['PATCH'])
+def update_vending_card(vending_id):
+    if request.method != 'PATCH':
+        return "pass"
+
+    return confirm_vending_card(vending_id)
