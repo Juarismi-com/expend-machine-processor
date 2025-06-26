@@ -51,8 +51,24 @@ def activar_reles_secuencialmente(tiempo_encendido=1):
       #print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé prendido)")
       time.sleep(5)
 
+      """Activa cada relé uno por uno y sale si el pin 25 está en alto."""
       pin_salida = 25  # Pin para monitorear interrupción
+
+      """Activa cada relé uno por uno durante X segundos, luego lo apaga."""
+      # Configura el pin de entrada (pin 25)
       GPIO.setup(pin_salida, GPIO.IN)
+
+      #print(f"{nombre} (GPIO {pin}) inicializado en LOW (relé prendido)")
+     
+      # Espera pero interrumpe si pin 25 cambia
+      tiempo_espera = 5
+      for _ in range(tiempo_espera * 100):  # 10 ciclos por segundo
+         if GPIO.input(pin_salida) == GPIO.HIGH:
+            print("Pin 25 en ALTO durante la espera. Terminando proceso.")
+            GPIO.output(pin, GPIO.HIGH)
+            GPIO.output(pin2, GPIO.HIGH)
+            return
+         time.sleep(0.01)
 
    #print(f"{nombre} (GPIO {pin}) inicializado en high (relé prendido)")
    #GPIO.cleanup()
@@ -150,4 +166,4 @@ if __name__ == "__main__":
    except KeyboardInterrupt:
       print("\nInterrumpido por el usuario.")
    finally:
-      GPIO.cleanup()
+      #GPIO.cleanup()
