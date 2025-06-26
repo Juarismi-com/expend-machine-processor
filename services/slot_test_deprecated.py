@@ -88,7 +88,7 @@ def activar_reles_secuencialmente_2(tiempo_encendido=1):
         GPIO.output(pin2, GPIO.LOW)
 
         # Espera pero interrumpe si pin 25 cambia
-        tiempo_espera = 5
+        tiempo_espera = 1
         for _ in range(tiempo_espera * 100):  # 10 ciclos por segundo
             if GPIO.input(pin_salida) == GPIO.HIGH:
                 print("Pin 25 en ALTO durante la espera. Terminando proceso.")
