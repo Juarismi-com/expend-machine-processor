@@ -89,7 +89,8 @@ def activar_reles_secuencialmente_2(tiempo_encendido=1):
 
         # Espera pero interrumpe si pin 25 cambia
         tiempo_espera = 1
-        for _ in range(tiempo_espera * 100):  # 10 ciclos por segundo
+        for _ in range(tiempo_espera * 3):  # 10 ciclos por segundo
+            
             if GPIO.input(pin_salida) == GPIO.HIGH:
                 print("Pin 25 en ALTO durante la espera. Terminando proceso.")
                 return
@@ -137,4 +138,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\nInterrumpido por el usuario.")
     finally:
-        GPIO.cleanup()
+        #GPIO.cleanup()
