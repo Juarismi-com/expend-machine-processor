@@ -34,7 +34,7 @@ GPIO.setwarnings(True)
    
 #   GPIO.output(gpio_pin, GPIO.HIGH)  # HIGH para desactivar (si el relé es activo en LOW)
 
-def activar_reles_secuencialmente(tiempo_encendido=1):
+def activar_reles_secuencialmente_2(tiempo_encendido=1):
    """Activa cada relé uno por uno durante X segundos, luego lo apaga."""
    #GPIO.setup(pin, GPIO.OUT)
 
