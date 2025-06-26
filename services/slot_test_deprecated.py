@@ -78,11 +78,9 @@ def activar_reles_secuencialmente_2(tiempo_encendido=1):
 def activar_reles_secuencialmente(tiempo_encendido=1):
 
    try:
-      print('prueba')
-      GPIO.cleanup()
 
       pin = 17
-      pin2 = 
+      pin2 = 12
       GPIO.setmode(GPIO.BCM)
       GPIO.setwarnings(True)
 
