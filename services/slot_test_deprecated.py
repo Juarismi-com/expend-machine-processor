@@ -61,7 +61,7 @@ def activar_reles_secuencialmente_2(tiempo_encendido=1):
       GPIO.cleanup()
 
 
-def activar_reles_secuencialmente(tiempo_encendido=1):
+def activar_reles_secuencialmente_2(tiempo_encendido=1):
 
    try:
       print('prueba')
@@ -103,7 +103,7 @@ def activar_reles_secuencialmente(tiempo_encendido=1):
       print("finaly")
       GPIO.cleanup()
 
-def activar_todos_los_reles_2(tiempo_encendido=1):
+def activar_todos_los_reles(tiempo_encendido=1):
    """Activa cada relé uno por uno durante X segundos, luego lo apaga."""
    #GPIO.setup(pin, GPIO.OUT)
 
@@ -143,7 +143,8 @@ def activar_todos_los_reles_2(tiempo_encendido=1):
 # Ejecutar si se llama directamente
 if __name__ == "__main__":
    try:
-      activar_reles_secuencialmente(tiempo_encendido=1)
+      activar_todos_los_reles()
+      #activar_reles_secuencialmente(tiempo_encendido=1)
    except KeyboardInterrupt:
       print("\nInterrumpido por el usuario.")
    finally:
