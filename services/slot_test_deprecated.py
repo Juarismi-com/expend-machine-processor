@@ -241,4 +241,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\nInterrumpido por el usuario.")
     finally:
-        #GPIO.cleanup()
+        print("hola")
