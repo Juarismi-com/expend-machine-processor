@@ -98,3 +98,12 @@ pip show requests
 Ver todos los pquetes instalados en env
 pip list
 ```
+
+
+```
+Actualizar en todas las maquinas las env antes de configurar (ejemplo)
+MACHINE_ID="cd19573a-d106-4089-b538-5f272b556234"
+API_URL="http://localhost:8001"
+BANCARD_API_URL="xyz"
+BANCARD_API_KEY="API_KEY"
+```
