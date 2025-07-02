@@ -18,7 +18,7 @@ def create_vending():
     return create_pending_vending(slot_num)
 
 
-@bp.route("/<int:vending_id>/qr/<int:fila>/<int:columna>", methods=['PATCH'])
+@bp.route("/<int:vending_id>", methods=['PATCH'])
 def update_vending_qr(vending_id, fila, columna):
     if request.method != 'PATCH':
         return "pass"

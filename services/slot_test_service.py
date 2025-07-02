@@ -232,7 +232,7 @@ if __name__ == "__main__":
         opcion = sys.argv[1]
 
         if opcion == "1":
-            activar_espiral_con_sensor_y_tiempo(tiempo_maximo=10)
+            activar_espiral_con_sensor_y_tiempo(tiempo_maximo=5)
         elif opcion == "2":
             probar_sensor_infrarrojo()
         else:
