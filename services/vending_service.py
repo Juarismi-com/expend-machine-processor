@@ -1,8 +1,9 @@
-from env import API_URL, MACHINE_ID, BANCARD_API_URL
+from env import API_URL, MACHINE_ID, BANCARD_API_URL, APP_PLATFORM
 from flask import jsonify
 import requests
-#from slot_service import activar_espiral_con_sensor_y_tiempo
-from services.slot import activar_espiral_con_sensor_y_tiempo
+
+if (APP_PLATFORM == "raspberry"):
+    from services.slot_service import activar_espiral_con_sensor_y_tiempo
 
 def create_pending_vending(slot_num):
     payload = {
@@ -32,45 +33,53 @@ def get_vending(vending_id):
 
 
 
-def confirm_vending_card(vending_id):
-    # traemos info de la venta remota
-    response_vendind_pending = get_vending_by_id(vending_id)
+def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
 
-    fila = response_vendind_pending['config']['fila']
-    columna = response_vendind_pending['config']['columna']
+    try:
+        # traemos info de la venta remota
+        response_vendind_pending = get_vending_by_id(vending_id)
 
-    # enviamos a bancard
-    payload_bancard = {
-       'facturaNro': response_vendind_pending['id'],
-       'monto': int(float(response_vendind_pending['precio_venta'])),
-       'montoVuelto': 0
-    }
+        fila = response_vendind_pending['config']['fila']
+        columna = response_vendind_pending['config']['columna']
 
-    res_bancard = requests.post(BANCARD_API_URL + "/pos/venta-qr", json=payload_bancard)
-    res_update_vending = requests.put(API_URL + "/ventas/" + vending_id, json=payload_success)
-    activar_espiral_con_sensor_y_tiempo(fila, columna, 5)
-    if res_bancard == 200:
-        print(res_bancard.json())
+        # enviamos a bancard
+        payload_bancard = {
+            'facturaNro': response_vendind_pending['id'],
+            'monto': int(float(response_vendind_pending['precio_venta'])),
+            'montoVuelto': 0
+        }
+
+        res_bancard = requests.post(BANCARD_API_URL + "/pos/venta-ux", json=payload_bancard, timeout=30)
+        
+        # si no se pudo procesar el pago
+        if res_bancard.status_code != 200:
+            return {
+                "message": "No se pudo actualizar la venta"
+            }
+        
+        # si estamos en raspberry y se proceso el pago
+        if (APP_PLATFORM == "raspberry"):
+            activar_espiral_con_sensor_y_tiempo(fila, columna, 5)
 
         payload_success = {
-            "metodo_pago": "visa mastercard",
+            "metodo_pago": metodo_pago,
             "estado": "A"
         }
+
+        res_update_vending = requests.put(API_URL + "/ventas/" + vending_id, json=payload_success)
         
-        return res_bancard.json()
-    else:
+        return res_update_vending.json()
+    except requests.exceptions.Timeout:
         return {
-            "message": "No se pudo actualizar la venta"
-        }
+                "message": "No se pudo conectar con el servidor de bancard"
+            }
+        
 
 
 def get_vending_by_id(vending_id):
     response = requests.get(f"{API_URL}/ventas/{vending_id}")
 
-
     # Checking the status code
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f'Request failed with status code {response.status_code}')
+    return response.json()
+        
         

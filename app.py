@@ -3,6 +3,7 @@ from flask_cors import CORS
 #from database.conn import get_db, close_db, init_db
 from routes.vending_route import bp as vending_bp
 from database.conn import get_db
+from env import APP_DEBUG
 
 app = Flask(__name__)
 app.config['DATABASE'] = 'expend_db.sql'
@@ -30,31 +31,6 @@ def hello_world():
 
 
 
-"""
-@app.route('/payment/bancard/qr')
-def get_external_data():
-    # Make a GET request to an external API
-
-    payload = {
-        'facturaNro': 12345,
-        'monto': 10,
-        'montoVuelto': 20
-    }
-
-    try:
-        # Make the POST request
-        response = requests.post('https://192.168.100.15:3000/pos/venta-qr', json=payload, timeout=100)
-
-        # Return the response from the external API
-        return jsonify({
-            'status_code': response.status_code,
-            'response': response.json()
-        })
-
-    except requests.exceptions.RequestException as e:
-        return jsonify({'error': str(e)}), 500
-"""
-
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=APP_DEBUG, port=5001)

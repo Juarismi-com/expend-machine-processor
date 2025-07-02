@@ -21,6 +21,13 @@ def create_vending():
 
 @bp.route("/<int:vending_id>", methods=['PATCH'])
 def update_vending_card(vending_id):
+    """Actualiza una venta si se concreto, rechazo o se cancelo
+    
+    Keyword arguments:
+    argument -- description
+    Return: Retorna un json confirmado o rechanzado la venta
+    """
+    
     if request.method != 'PATCH':
         return "pass"
 
