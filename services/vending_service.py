@@ -47,7 +47,7 @@ def confirm_vending_card(vending_id):
     }
 
     res_bancard = requests.post(BANCARD_API_URL + "/pos/venta-ux", json=payload_bancard)
-    res_update_vending = requests.put(API_URL + "/ventas/" + vending_id, json=payload_success)
+    #res_update_vending = requests.put(API_URL + "/ventas/" + vending_id, json=payload_success)
     
     activar_espiral_con_sensor_y_tiempo(fila, columna, 5)
     if res_bancard == 200:
