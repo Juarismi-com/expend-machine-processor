@@ -1,7 +1,8 @@
 from env import API_URL, MACHINE_ID, BANCARD_API_URL
 from flask import jsonify
 import requests
-from slot_service import activar_espiral_con_sensor_y_tiempo
+#from slot_service import activar_espiral_con_sensor_y_tiempo
+from services.slot import activar_espiral_con_sensor_y_tiempo
 
 def create_pending_vending(slot_num):
     payload = {
