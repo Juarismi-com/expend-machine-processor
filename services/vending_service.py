@@ -49,7 +49,10 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
             'montoVuelto': 0
         }
 
-        res_bancard = requests.post(BANCARD_API_URL + "/pos/venta-ux", json=payload_bancard, timeout=30)
+        if (metodo_pago == "QR"):
+            res_bancard = requests.post(BANCARD_API_URL + "/pos/venta-qr", json=payload_bancard, timeout=20)
+        else:
+            res_bancard = requests.post(BANCARD_API_URL + "/pos/venta-ux", json=payload_bancard, timeout=20)
         
         # si no se pudo procesar el pago
         if res_bancard.status_code != 200:
@@ -73,6 +76,10 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
         return {
                 "message": "No se pudo conectar con el servidor de bancard"
             }
+    except Exception as e:
+        return {
+            "message": e.__doc__
+        }
         
 
 

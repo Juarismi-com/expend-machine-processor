@@ -19,8 +19,8 @@ def create_vending():
 
 
 
-@bp.route("/<int:vending_id>", methods=['PATCH'])
-def update_vending_card(vending_id):
+@bp.route("/<int:vending_id>/<string:metodo_pago>", methods=['PATCH'])
+def update_vending_card(vending_id, metodo_pago):
     """Actualiza una venta si se concreto, rechazo o se cancelo
     
     Keyword arguments:
@@ -31,4 +31,4 @@ def update_vending_card(vending_id):
     if request.method != 'PATCH':
         return "pass"
 
-    return confirm_vending_card(vending_id)
+    return confirm_vending_card(vending_id, metodo_pago)

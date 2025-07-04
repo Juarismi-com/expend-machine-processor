@@ -72,3 +72,5 @@ def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
 
         print("Proceso finalizado, relés desactivados.")
         GPIO.cleanup()
+
+

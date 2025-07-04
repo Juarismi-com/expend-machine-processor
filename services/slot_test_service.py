@@ -107,9 +107,6 @@ def activar_reles_secuencialmente_2(tiempo_encendido=1):
 
 
 
-
-
-
 def activete_all_reles(tiempo_encendido=1):
     """Activa cada combinación de dos relés uno por uno durante X segundos."""
 
