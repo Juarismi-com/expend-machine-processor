@@ -43,12 +43,13 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
         columna = response_vendind_pending['config']['columna']
 
         # enviamos a bancard
+        # seleccionamos tipo de venta a generaar
         payload_bancard = {
             'facturaNro': response_vendind_pending['id'],
             'monto': int(float(response_vendind_pending['precio_venta'])),
             'montoVuelto': 0
         }
-
+ 
         if (metodo_pago == "QR"):
             res_bancard = requests.post(BANCARD_API_URL + "/pos/venta-qr", json=payload_bancard, timeout=20)
         else:
