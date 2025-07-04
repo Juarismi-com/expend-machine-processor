@@ -50,7 +50,7 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
             'montoVuelto': 0
         }
  
-        if (metodo_pago == "QR"):
+        if (metodo_pago == "qr"):
             res_bancard = requests.post(BANCARD_API_URL + "/pos/venta-qr", json=payload_bancard, timeout=20)
         else:
             res_bancard = requests.post(BANCARD_API_URL + "/pos/venta-ux", json=payload_bancard, timeout=20)
