@@ -174,3 +174,4 @@ cython_debug/
 .pypirc
 data
 expend_local.db
+env.py
