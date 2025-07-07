@@ -32,3 +32,5 @@ def update_vending_card(vending_id, metodo_pago):
         return "pass"
 
     return confirm_vending_card(vending_id, metodo_pago)
+
+
