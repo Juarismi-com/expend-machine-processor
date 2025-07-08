@@ -2,6 +2,7 @@ from flask import Flask, jsonify, abort, g
 from flask_cors import CORS
 #from database.conn import get_db, close_db, init_db
 from routes.vending_route import bp as vending_bp
+from routes.slot_route import slot_bp
 from database.conn import get_db
 from env import APP_DEBUG
 
@@ -25,12 +26,14 @@ def init_db_command():
 # Configuracion de las rutas
 CORS(app) 
 app.register_blueprint(vending_bp, url_prefix="/vending")
+app.register_blueprint(slot_bp, url_prefix="/slots")
+
+
 @app.route("/")
 def hello_world():
     return "api v1"
 
 
-
-
 if __name__ == "__main__":
+    
     app.run(host='0.0.0.0', debug=APP_DEBUG, port=5001)
