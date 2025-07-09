@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
 from services.vending_service import create_pending_vending, confirm_vending_card
 bp = Blueprint('vending', __name__)
+from flask_cors import cross_origin
 
-
-@bp.route("/", methods=['GET', 'POST'])
+@bp.route("/", methods=['GET', 'POST', 'OPTIONS'])
 def create_vending():
     
     if request.method != 'POST':
@@ -19,7 +19,7 @@ def create_vending():
 
 
 
-@bp.route("/<int:vending_id>/<string:metodo_pago>", methods=['PATCH'])
+@bp.route("/<int:vending_id>/<string:metodo_pago>", methods=['PATCH','OPTIONS'])
 def update_vending_card(vending_id, metodo_pago):
     """Actualiza una venta si se concreto, rechazo o se cancelo
     

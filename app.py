@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort, g
+from flask import Flask, jsonify, abort, g, request, make_response
 from flask_cors import CORS
 #from database.conn import get_db, close_db, init_db
 from routes.vending_route import bp as vending_bp
@@ -25,9 +25,21 @@ def init_db_command():
 
 # Configuracion de las rutas
 CORS(app) 
+@app.before_request
+def handle_options():
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT,PATCH, DELETE, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        return response, 200
 app.register_blueprint(vending_bp, url_prefix="/vending")
 app.register_blueprint(slot_bp, url_prefix="/slots")
 
+# Muestra el listado de rutas configuradas 
+with app.app_context():
+    for rule in app.url_map.iter_rules():
+        print(f"{rule} -> {rule.methods}")
 
 @app.route("/")
 def hello_world():
