@@ -56,10 +56,10 @@ def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
                 print("Movimiento detectado. Interrumpiendo expendio.")
                 break
 
-            if time.time() - tiempo_inicio >= tiempo_maximo:
+            """if time.time() - tiempo_inicio >= tiempo_maximo:
                 print(f"Tiempo máximo de {tiempo_maximo} segundos alcanzado. Terminando expendio.")
                 break
-
+            """
             time.sleep(0.01)
 
     except RuntimeError as e:
