@@ -175,3 +175,6 @@ cython_debug/
 data
 expend_local.db
 env.py
+
+cert.pem
+key.pem
