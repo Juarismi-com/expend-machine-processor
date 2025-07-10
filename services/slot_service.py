@@ -52,10 +52,10 @@ def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
         tiempo_inicio = time.time()
 
         while True:
-            if GPIO.input(pin_sensor) == GPIO.HIGH:
+            """if GPIO.input(pin_sensor) == GPIO.HIGH:
                 print("Movimiento detectado. Interrumpiendo expendio.")
                 break
-
+            """
             """if time.time() - tiempo_inicio >= tiempo_maximo:
                 print(f"Tiempo máximo de {tiempo_maximo} segundos alcanzado. Terminando expendio.")
                 break
