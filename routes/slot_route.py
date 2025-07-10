@@ -23,8 +23,8 @@ def get_slot_by_slot_id(slot_num):
 
         if APP_PLATFORM == "raspberry":
             print(APP_PLATFORM)
-            probar_sensor_infrarrojo()
-            #activar_espiral_con_sensor_y_tiempo(fila, columna, 5)
+            #probar_sensor_infrarrojo()
+            activar_espiral_con_sensor_y_tiempo(fila, columna, 5)
 
         return jsonify({
             "status": "ok",
