@@ -5,7 +5,7 @@ import requests
 slot_bp = Blueprint('slots', __name__)
 
 if APP_PLATFORM == "raspberry":
-    from services.slot_service import activar_espiral_con_sensor_y_tiempo
+    from services.slot_service import activar_espiral_con_sensor_y_tiempo, probar_sensor_infrarrojo
 
 @slot_bp.route('/<int:slot_num>', methods=['GET'])
 def get_slot_by_slot_id(slot_num):
@@ -23,7 +23,8 @@ def get_slot_by_slot_id(slot_num):
 
         if APP_PLATFORM == "raspberry":
             print(APP_PLATFORM)
-            activar_espiral_con_sensor_y_tiempo(fila, columna, 5)
+            probar_sensor_infrarrojo()
+            #activar_espiral_con_sensor_y_tiempo(fila, columna, 5)
 
         return jsonify({
             "status": "ok",

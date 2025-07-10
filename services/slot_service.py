@@ -2,89 +2,111 @@ import RPi.GPIO as GPIO
 import time
 import logging
 
-# Configuración del logger
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
-)
 logger = logging.getLogger(__name__)
 
-# Bandera para no repetir inicialización
-GPIO_initialized = False
-
-def init_gpio():
-    global GPIO_initialized
-    if not GPIO_initialized:
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(True)
-        GPIO_initialized = True
-        logger.info("GPIO inicializado en modo BCM")
-
-
 def active_slot(pin1, pin2):
-    """Activa cada relé uno por uno durante 5 segundos, luego lo apaga."""
-    try:
-        init_gpio()
+   """Activa cada relé uno por uno durante X segundos, luego lo apaga."""
 
-        GPIO.setup(pin1, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(pin2, GPIO.OUT, initial=GPIO.LOW)
+   try:
 
-        logger.info(f"Activando relés en pines {pin1} y {pin2}")
-        GPIO.output(pin1, GPIO.LOW)
-        GPIO.output(pin2, GPIO.LOW)
+      GPIO.setmode(GPIO.BCM)
+      GPIO.setwarnings(True)
 
-        time.sleep(5)
+      GPIO.setup(pin1, GPIO.OUT, initial=GPIO.LOW)
+      GPIO.setup(pin2, GPIO.OUT, initial=GPIO.LOW)
 
-    except (RuntimeError, KeyboardInterrupt) as e:
-        logger.error("Error durante active_slot: %s", e)
+      GPIO.output(pin1, GPIO.LOW)
+      GPIO.output(pin2, GPIO.LOW)
+      
+      time.sleep(5)
 
-    finally:
-        logger.info("Limpiando GPIO (active_slot)")
-        GPIO.cleanup()
-
+   except RuntimeError as e:
+      print("\nInterrumpido por el usuario.")
+      print(e)
+   
+   finally:
+      print("finaly")
+      GPIO.cleanup()
 
 def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
     """
     Activa dos relés para expendio y monitoriza sensor en pin 25.
     Si el sensor infrarrojo detecta presencia, se interrumpe el proceso.
     """
-    pin_sensor = 25  # Sensor infrarrojo
+    pin_sensor = 25     # Sensor infrarrojo de movimiento
 
     try:
-        init_gpio()
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(True)
 
-        GPIO.setup(pin_fila, GPIO.OUT, initial=GPIO.HIGH)
-        GPIO.setup(pin_columna, GPIO.OUT, initial=GPIO.HIGH)
+        # Configuración de relés y sensor
+        GPIO.setup(pin_fila, GPIO.OUT, initial=GPIO.LOW)
+        GPIO.setup(pin_columna, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(pin_sensor, GPIO.IN)
 
-        GPIO.output(pin_fila, GPIO.LOW)
+        # Activar relés (simulación de expendio)
+        GPIO.output(pin_fila, GPIO.LOW)      # LOW → Relé activado (dependiendo del módulo)
         GPIO.output(pin_columna, GPIO.LOW)
 
-        logger.info(f"Expedición en proceso (tiempo máximo: {tiempo_maximo}s)")
+        print(f"Expedición en proceso, monitoreando sensor en pin {pin_sensor} por {tiempo_maximo} segundos...")
 
         tiempo_inicio = time.time()
 
         while True:
-            sensor_estado = GPIO.input(pin_sensor)
-            logger.info(f"Sensor pin {pin_sensor} estado: {sensor_estado}")
-
-            if sensor_estado == GPIO.HIGH:
-                logger.info("Movimiento detectado. Interrumpiendo expendio.")
+            if GPIO.input(pin_sensor) == GPIO.HIGH:
+                print("Movimiento detectado. Interrumpiendo expendio.")
+                GPIO.output(pin_fila, GPIO.HIGH)
+                GPIO.output(pin_columna, GPIO.HIGH)
                 break
 
             if time.time() - tiempo_inicio >= tiempo_maximo:
-                logger.info("Tiempo máximo alcanzado. Terminando expendio.")
+                print(f"Tiempo máximo de {tiempo_maximo} segundos alcanzado. Terminando expendio.")
                 break
 
             time.sleep(0.01)
 
-    except (RuntimeError, KeyboardInterrupt) as e:
-        logger.error("Error durante activar_espiral: %s", e)
+    except RuntimeError as e:
+        print("\nError en el proceso.")
+        print(e)
 
     finally:
+        # Apagar los relés
         GPIO.output(pin_fila, GPIO.HIGH)
         GPIO.output(pin_columna, GPIO.HIGH)
-        logger.info("Proceso finalizado, relés desactivados.")
+
+        print("Proceso finalizado, relés desactivados.")
         GPIO.cleanup()
 
 
+def probar_sensor_infrarrojo():
+    """
+    Monitorea continuamente el sensor en el pin 25 e imprime el estado.
+    Usa Ctrl + C para detener.
+    """
+
+    pin_sensor = 25  # Número de pin para el sensor
+
+    try:
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(True)
+        GPIO.setup(pin_sensor, GPIO.IN)
+
+        print("Leyendo el sensor infrarrojo en pin 25. Presiona Ctrl + C para salir.")
+
+        while True:
+            estado = GPIO.input(pin_sensor)
+            print(estado)
+            
+            if estado == GPIO.HIGH:
+                print("➡ Movimiento detectado.")
+            else:
+                print("⏸ Sin movimiento.")
+
+            time.sleep(0.5)  # Lectura cada medio segundo
+
+    except KeyboardInterrupt:
+        print("\nLectura interrumpida por el usuario.")
+
+    finally:
+        GPIO.cleanup()
+        print("GPIO limpio. Finalizado.")
