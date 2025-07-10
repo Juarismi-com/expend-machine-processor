@@ -22,6 +22,7 @@ def get_slot_by_slot_id(slot_num):
         columna = config['columna']
 
         if APP_PLATFORM == "raspberry":
+            print(APP_PLATFORM)
             activar_espiral_con_sensor_y_tiempo(fila, columna, 5)
 
         return jsonify({
