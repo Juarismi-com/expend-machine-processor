@@ -66,7 +66,7 @@ def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
 
         while True:
             sensor_estado = GPIO.input(pin_sensor)
-            logger.debug(f"Sensor pin {pin_sensor} estado: {sensor_estado}")
+            logger.info(f"Sensor pin {pin_sensor} estado: {sensor_estado}")
 
             if sensor_estado == GPIO.HIGH:
                 logger.info("Movimiento detectado. Interrumpiendo expendio.")
