@@ -21,6 +21,7 @@ def get_slot_by_slot_id(slot_num):
         fila = config['fila']
         columna = config['columna']
 
+        print("prueba")
         if APP_PLATFORM == "raspberry":
             print(APP_PLATFORM)
             activar_espiral_con_sensor_y_tiempo(fila, columna, 5)
