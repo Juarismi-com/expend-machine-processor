@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+from env import PIN_INTRARROJO
 
 
 def active_slot(pin1, pin2):
@@ -28,10 +29,10 @@ def active_slot(pin1, pin2):
 
 def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
     """
-    Activa dos relés para expendio y monitoriza sensor en pin 25.
+    Activa dos relés para expendio y monitoriza sensor en pin 25 o el que fuere.
     Si el sensor infrarrojo detecta presencia, se interrumpe el proceso.
     """
-    pin_sensor = 25     # Sensor infrarrojo de movimiento
+    pin_sensor =  PIN_INTRARROJO    # Sensor infrarrojo de movimiento
 
     try:
         GPIO.setmode(GPIO.BCM)
