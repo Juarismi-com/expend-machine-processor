@@ -3,7 +3,7 @@
 import RPi.GPIO as GPIO
 import time
 import sys
-from env import PIN_INTRARROJO
+
 # Diccionario: nombre del relé → número de GPIO
 relays = {
     "rele_1": 17,
@@ -37,7 +37,7 @@ def activar_reles_secuencialmente(tiempo_encendido=1):
     try:
         pin = 17
         pin2 = 12
-        pin_salida = PIN_INTRARROJO  # Pin para monitorear interrupción
+        pin_salida = 8  # Pin para monitorear interrupción
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(True)
@@ -76,7 +76,7 @@ def activar_reles_secuencialmente_2(tiempo_encendido=1):
     try:
         pin = 17
         pin2 = 12
-        pin_salida = PIN_INTRARROJO  # Pin para monitorear interrupción
+        pin_salida = 8  # Pin para monitorear interrupción
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(True)
@@ -141,7 +141,7 @@ def activar_espiral_con_sensor_y_tiempo(tiempo_maximo=10):
 
     pin_fila = 17       # Relé fila
     pin_columna = 12    # Relé columna
-    pin_sensor = PIN_INTRARROJO     # Sensor infrarrojo de movimiento
+    pin_sensor = 8     # Sensor infrarrojo de movimiento
 
     try:
         GPIO.setmode(GPIO.BCM)
@@ -191,7 +191,7 @@ def probar_sensor_infrarrojo():
     Usa Ctrl + C para detener.
     """
 
-    pin_sensor = PIN_INTRARROJO  # Número de pin para el sensor
+    pin_sensor = 8  # Número de pin para el sensor
 
     try:
         GPIO.setmode(GPIO.BCM)
