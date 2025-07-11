@@ -21,9 +21,7 @@ def get_slot_by_slot_id(slot_num):
         fila = config['fila']
         columna = config['columna']
 
-        if APP_PLATFORM == "raspberry":
-            print(APP_PLATFORM)
-            #probar_sensor_infrarrojo()
+        if APP_PLATFORM == "raspberry":    
             activar_espiral_con_sensor_y_tiempo(fila, columna, 5)
 
         return jsonify({
