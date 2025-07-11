@@ -1,7 +1,10 @@
 # report_ip.py
 import requests
 import socket
-from ..env import API_URL, MACHINE_ID
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+from env import API_URL, MACHINE_ID
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
