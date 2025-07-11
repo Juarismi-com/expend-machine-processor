@@ -3,8 +3,8 @@ Description=Automatica Front Service
 After=network.target
 
 [Service]
-User={user}
-WorkingDirectory=/home/{user}/automatica-vending/expend-local-app/www
+User=rasp
+WorkingDirectory=/home/rasp/automatica-vending/expend-local-app/www
 ExecStart=/usr/bin/python3 -m http.server 8080
 Restart=always
 

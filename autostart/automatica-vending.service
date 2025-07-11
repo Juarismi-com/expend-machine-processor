@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 User={user}
-WorkingDirectory=/home/{user}/automatica-vending/expend-machine-processor
-ExecStart=/bin/bash /home/{user}/automatica-vending/expend-machine-processor/run.sh
+WorkingDirectory=/home/rasp/automatica-vending/expend-machine-processor
+ExecStart=/bin/bash /home/rasp/automatica-vending/expend-machine-processor/run.sh
 Restart=always
 
 [Install]

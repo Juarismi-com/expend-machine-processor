@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 import logging
+from ..env import PIN_INTRARROJO
 
 # Configuración del logger
 logging.basicConfig(
@@ -48,7 +49,7 @@ def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
     Activa dos relés para expendio y monitoriza sensor en pin 25.
     Si el sensor infrarrojo detecta presencia, se interrumpe el proceso.
     """
-    pin_sensor = 25  # Sensor infrarrojo
+    pin_sensor = PIN_INTRARROJO  # Sensor infrarrojo
 
     try:
         init_gpio()
@@ -94,7 +95,7 @@ def probar_sensor_infrarrojo():
     Usa Ctrl + C para detener.
     """
 
-    pin_sensor = 25  # Número de pin para el sensor
+    pin_sensor = PIN_INTRARROJO  # Número de pin para el sensor
 
     try:
         GPIO.setmode(GPIO.BCM)

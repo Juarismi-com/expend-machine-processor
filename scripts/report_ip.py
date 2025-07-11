@@ -1,6 +1,7 @@
 # report_ip.py
 import requests
 import socket
+from ..env import API_URL, MACHINE_ID
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -14,8 +15,8 @@ def get_local_ip():
 
 def report_ip():
     ip = get_local_ip()
-    url = "https://TU_BACKEND/api/update-ip"
-    data = {"ip": ip, "key": "secreto123"}  # opcional: seguridad
+    url = API_URL + "/maquinas-ips/" + MACHINE_ID
+    data = {"ip": ip}  # opcional: seguridad
     try:
         res = requests.post(url, json=data, timeout=5)
         print(f"[+] IP reportada: {ip} ({res.status_code})")
