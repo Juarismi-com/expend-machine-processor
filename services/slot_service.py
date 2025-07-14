@@ -54,8 +54,8 @@ def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
     try:
         init_gpio()
 
-        GPIO.setup(pin_fila, GPIO.OUT, initial=GPIO.HIGH)
-        GPIO.setup(pin_columna, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setup(pin_fila, GPIO.OUT, initial=GPIO.LOW)
+        GPIO.setup(pin_columna, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(pin_sensor, GPIO.IN)
 
         GPIO.output(pin_fila, GPIO.LOW)

@@ -90,7 +90,7 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
         # si no se pudo procesar el pago
         if res_bancard.status_code != 200:
             return {
-                "message": "No se pudo actualizar la venta"
+                "message": "No se pudo realizar la venta"
             }
 
         # si estamos en raspberry y se proceso el pago

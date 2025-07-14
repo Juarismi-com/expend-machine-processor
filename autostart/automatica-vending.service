@@ -3,7 +3,7 @@ Description=Automatica Vending Service
 After=network.target
 
 [Service]
-User={user}
+User=rasp
 WorkingDirectory=/home/rasp/automatica-vending/expend-machine-processor
 ExecStart=/bin/bash /home/rasp/automatica-vending/expend-machine-processor/run.sh
 Restart=always
