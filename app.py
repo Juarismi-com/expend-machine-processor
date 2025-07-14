@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, abort, g, request, make_response
 from flask_cors import CORS
-#from database.conn import get_db, close_db, init_db
 from routes.vending_route import bp as vending_bp
 from routes.slot_route import slot_bp
 from database.conn import get_db
