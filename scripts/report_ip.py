@@ -1,7 +1,8 @@
 # report_ip.py
 import requests
 import socket
-import sys, os
+from env import API_URL, MACHINE_ID
+
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -15,7 +16,7 @@ def get_local_ip():
 
 def report_ip():
     ip = get_local_ip()
-    url = "https://squid-app-bbs42.ondigitalocean.app/maquinas-ips/19bebe9a-faf1-45e9-9efc-094de55b0d6d" 
+    url = API_URL + "/maquinas-ips/" + MACHINE_ID 
     data = {"ip": ip}  # opcional: seguridad
     try:
         res = requests.post(url, json=data, timeout=5)
