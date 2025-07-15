@@ -276,7 +276,7 @@ def prueba_2(tiempo_maximo=10):
     """
 
     pin_fila = 17       # Relé fila
-    pin_columna = 12    # Relé columna
+    pin_columna = 4    # Relé columna
     pin_sensor = 25     # Sensor infrarrojo de movimiento
 
     try:
