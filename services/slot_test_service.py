@@ -476,8 +476,8 @@ if __name__ == "__main__":
 
         if opcion == "1":
             #activar_espiral_con_sensor_y_tiempo(tiempo_maximo=5)
-            prueba_1(tiempo_maximo=5)
-            #prueba_2()
+            #prueba_1(tiempo_maximo=5)
+            prueba_2()
             # prueba_3()
             # prueba_4()
         elif opcion == "2":
