@@ -45,8 +45,6 @@ with app.app_context():
 
 
 # configuracion de wifi
-CONFIG_FILE = "/etc/NetworkManager/system-connections/preconfigured.nmconnection"
-
 @app.route("/update_wifi", methods=["POST"])
 def update_wifi():
     # Autenticación
