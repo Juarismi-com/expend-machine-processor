@@ -475,8 +475,8 @@ if __name__ == "__main__":
         opcion = sys.argv[1]
 
         if opcion == "1":
-            activar_espiral_con_sensor_y_tiempo(tiempo_maximo=5)
-            # prueba_1(tiempo_maximo=5)
+            #activar_espiral_con_sensor_y_tiempo(tiempo_maximo=5)
+            prueba_1(tiempo_maximo=5)
             #prueba_2()
             # prueba_3()
             # prueba_4()
