@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 import logging
-from ..env import PIN_INTRARROJO
+from env import PIN_INTRARROJO
 
 # Configuración del logger
 logging.basicConfig(
