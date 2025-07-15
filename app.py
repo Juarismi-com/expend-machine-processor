@@ -3,7 +3,7 @@ from flask_cors import CORS
 from routes.vending_route import bp as vending_bp
 from routes.slot_route import slot_bp
 from database.conn import get_db
-from env import APP_DEBUG
+from env import APP_DEBUG, AUTH_TOKEN
 import subprocess
 import re
 import os
@@ -46,7 +46,6 @@ with app.app_context():
 
 # configuracion de wifi
 CONFIG_FILE = "/etc/NetworkManager/system-connections/preconfigured.nmconnection"
-AUTH_TOKEN = "AUTH_VENDING_SECRET"  
 
 @app.route("/update_wifi", methods=["POST"])
 def update_wifi():
