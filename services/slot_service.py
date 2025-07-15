@@ -16,10 +16,15 @@ GPIO_initialized = False
 def init_gpio():
     global GPIO_initialized
     if not GPIO_initialized:
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(True)
-        GPIO_initialized = True
-        logger.info("GPIO inicializado en modo BCM")
+        try:
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setwarnings(True)
+            GPIO_initialized = True
+            logger.info("GPIO inicializado en modo BCM")
+        except RuntimeError as e:
+            logger.error("Fallo al inicializar GPIO: %s", e)
+    else:
+        logger.debug("GPIO ya estaba inicializado")
 
 
 def active_slot(pin1, pin2):
@@ -46,35 +51,37 @@ def active_slot(pin1, pin2):
 
 def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
     """
-    Activa dos relés para expendio y monitoriza sensor en pin 25.
+    Activa dos relés para expendio y monitoriza sensor en pin definido.
     Si el sensor infrarrojo detecta presencia, se interrumpe el proceso.
     """
-    pin_sensor = PIN_INTRARROJO  # Sensor infrarrojo
+    pin_sensor = PIN_INTRARROJO
 
     try:
         init_gpio()
 
+        # Configurar pines
         GPIO.setup(pin_fila, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(pin_columna, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(pin_sensor, GPIO.IN)
 
+        # Activar relés (o preparar señal)
         GPIO.output(pin_fila, GPIO.LOW)
         GPIO.output(pin_columna, GPIO.LOW)
 
-        logger.info(f"Expedición en proceso (tiempo máximo: {tiempo_maximo}s)")
+        logger.info(f"Expedición en proceso (máximo {tiempo_maximo} segundos)")
 
         tiempo_inicio = time.time()
 
         while True:
             sensor_estado = GPIO.input(pin_sensor)
-            logger.debug(f"Sensor pin {pin_sensor} estado: {sensor_estado}")
+            logger.debug(f"Sensor (pin {pin_sensor}) estado: {sensor_estado}")
 
             if sensor_estado == GPIO.HIGH:
-                logger.info("Movimiento detectado. Interrumpiendo expendio.")
+                logger.info("Movimiento detectado por el sensor. Interrumpiendo expendio.")
                 break
 
             if time.time() - tiempo_inicio >= tiempo_maximo:
-                logger.info("Tiempo máximo alcanzado. Terminando expendio.")
+                logger.info("Tiempo máximo alcanzado. Finalizando expendio.")
                 break
 
             time.sleep(0.01)
@@ -83,11 +90,13 @@ def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
         logger.error("Error durante activar_espiral: %s", e)
 
     finally:
+        # Desactivar relés o señales
         GPIO.output(pin_fila, GPIO.HIGH)
         GPIO.output(pin_columna, GPIO.HIGH)
-        logger.info("Proceso finalizado, relés desactivados.")
-        GPIO.cleanup()
-
+        logger.info("Proceso finalizado. Relés desactivados.")
+        GPIO.cleanup()  # Limpieza segura
+        global GPIO_initialized
+        GPIO_initialized = False  # Marcar como no inicializado para futuras llamadas
 
 def probar_sensor_infrarrojo():
     """
