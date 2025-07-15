@@ -275,7 +275,7 @@ def prueba_2(tiempo_maximo=10):
     trata de forzar estado inicial del pin 25
     """
 
-    pin_fila = 17       # Relé fila
+    pin_fila = 18       # Relé fila
     pin_columna = 4    # Relé columna
     pin_sensor = 25     # Sensor infrarrojo de movimiento
 
@@ -477,9 +477,9 @@ if __name__ == "__main__":
         if opcion == "1":
             #activar_espiral_con_sensor_y_tiempo(tiempo_maximo=5)
             #prueba_1(tiempo_maximo=5)
-            #prueba_2()
+            prueba_2()
             #prueba_3()
-            prueba_4()
+            #prueba_4()
         elif opcion == "2":
             probar_sensor_infrarrojo()
         else:
