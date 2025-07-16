@@ -49,7 +49,62 @@ def active_slot(pin1, pin2):
         GPIO.cleanup()
 
 
-def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
+def activar_espilar_en_high(pin_fila, pin_columna, tiempo_maximo=5):
+    pin_sensor = PIN_INTRARROJO     # Sensor infrarrojo de movimiento
+
+    try:
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(True)
+
+        # Configurar relés y sensor con pull-down
+        GPIO.setup(pin_fila, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setup(pin_columna, GPIO.OUT, initial=GPIO.HIGH)
+        GPIO.setup(pin_sensor, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+        # Leer estado inicial del sensor antes de activar relés
+        print(f"Estado inicial del sensor (pin {pin_sensor}): {GPIO.input(pin_sensor)}")
+        time.sleep(0.1)  # Breve espera para estabilizar
+
+        # Activar relés (LOW activa en la mayoría de módulos)
+        GPIO.output(pin_fila, GPIO.LOW)
+        GPIO.output(pin_columna, GPIO.LOW)
+
+        print(f"Expedición en proceso, monitoreando sensor en pin {pin_sensor} por {tiempo_maximo} segundos...")
+
+        tiempo_inicio = time.time()
+        lecturas_consecutivas = 0
+        umbral_confirmacion = 5
+
+        while True:
+            if GPIO.input(pin_sensor):
+                lecturas_consecutivas += 1
+            else:
+                lecturas_consecutivas = 0
+
+            if lecturas_consecutivas >= umbral_confirmacion:
+                print("Sensor activado (movimiento detectado). Cancelando proceso.")
+                break
+
+            if time.time() - tiempo_inicio >= tiempo_maximo:
+                print(f"Tiempo máximo de {tiempo_maximo} segundos alcanzado. Terminando expendio.")
+                break
+
+            time.sleep(0.01)
+
+    except RuntimeError as e:
+        print("\nError en el proceso.")
+        print(e)
+
+    finally:
+        # Desactivar relés (HIGH = desactivado en la mayoría)
+        GPIO.output(pin_fila, GPIO.HIGH)
+        GPIO.output(pin_columna, GPIO.HIGH)
+
+        print("Proceso finalizado, relés desactivados.")
+        GPIO.cleanup()
+
+
+def activar_espiral_en_low(pin_fila, pin_columna, tiempo_maximo=5):
     """
     Activa dos relés para expendio y monitoriza sensor en pin definido.
     Si el sensor infrarrojo detecta presencia, se interrumpe el proceso.
@@ -97,6 +152,7 @@ def activar_espiral_con_sensor_y_tiempo(pin_fila, pin_columna, tiempo_maximo=5):
         GPIO.cleanup()  # Limpieza segura
         global GPIO_initialized
         GPIO_initialized = False  # Marcar como no inicializado para futuras llamadas
+
 
 def probar_sensor_infrarrojo():
     """

@@ -1,11 +1,11 @@
 from flask import Blueprint, jsonify
-from env import API_URL, APP_PLATFORM, MACHINE_ID
+from env import API_URL, APP_PLATFORM, MACHINE_ID, MODO_RELES
 import requests
 
 slot_bp = Blueprint('slots', __name__)
 
 if APP_PLATFORM == "raspberry":
-    from services.slot_service import activar_espiral_con_sensor_y_tiempo
+    from services.slot_service import activar_espiral_en_low, activar_espilar_en_high
 
 @slot_bp.route('/<int:slot_num>', methods=['GET'])
 def get_slot_by_slot_id(slot_num):
@@ -22,7 +22,10 @@ def get_slot_by_slot_id(slot_num):
         columna = config['columna']
 
         if APP_PLATFORM == "raspberry":    
-            activar_espiral_con_sensor_y_tiempo(fila, columna, 5)
+            if MODO_RELES == 1:
+                activar_espilar_en_high(fila, columna, 5)
+            else:
+                activar_espiral_en_low(fila, columna, 5)
 
         return jsonify({
             "status": "ok",

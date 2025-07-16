@@ -133,7 +133,7 @@ def activete_all_reles(tiempo_encendido=1):
                 GPIO.cleanup()
 
 
-def activar_espiral_con_sensor_y_tiempo(tiempo_maximo=10):
+def activar_espiral_en_low(tiempo_maximo=10):
     """
     Activa dos relés para expendio y monitoriza sensor en pin 25.
     Si el sensor infrarrojo detecta presencia, se interrumpe el proceso.
@@ -220,57 +220,7 @@ def probar_sensor_infrarrojo():
 
 
 
-def prueba_1(tiempo_maximo=10):
-    """
-    muestra estado pin 25
-    """
-
-    pin_fila = 17       # Relé fila
-    pin_columna = 12    # Relé columna
-    pin_sensor = 25     # Sensor infrarrojo de movimiento
-
-    try:
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(True)
-
-        # Configuración de relés y sensor
-        GPIO.setup(pin_fila, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(pin_columna, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(pin_sensor, GPIO.IN)
-
-        # Activar relés (simulación de expendio)
-        GPIO.output(pin_fila, GPIO.LOW)      # LOW → Relé activado (dependiendo del módulo)
-        GPIO.output(pin_columna, GPIO.LOW)
-
-        print(f"Expedición en proceso, monitoreando sensor en pin {pin_sensor} por {tiempo_maximo} segundos...")
-
-        tiempo_inicio = time.time()
-
-        while True:
-            print(GPIO.input(pin_sensor))
-
-            if time.time() - tiempo_inicio >= tiempo_maximo:
-                print(f"Tiempo máximo de {tiempo_maximo} segundos alcanzado. Terminando expendio.")
-                break
-
-            time.sleep(0.01)
-
-    except RuntimeError as e:
-        print("\nError en el proceso.")
-        print(e)
-
-    finally:
-        # Apagar los relés
-        GPIO.output(pin_fila, GPIO.HIGH)
-        GPIO.output(pin_columna, GPIO.HIGH)
-
-        print("Proceso finalizado, relés desactivados.")
-        GPIO.cleanup()
-
-import RPi.GPIO as GPIO
-import time
-
-def prueba_2(tiempo_maximo=10):
+def activar_espilar_en_high(tiempo_maximo=5):
     """
     trata de forzar estado inicial del pin 25
     """
@@ -330,138 +280,6 @@ def prueba_2(tiempo_maximo=10):
         print("Proceso finalizado, relés desactivados.")
         GPIO.cleanup()
 
-import RPi.GPIO as GPIO
-import time
-
-def prueba_3(tiempo_maximo=10):
-    """
-    Activa dos relés para expendio y monitoriza sensor en pin 25.
-    En esta versión, los relés se activan con HIGH (activo en alto).
-    Se confirma el estado del sensor con múltiples lecturas consecutivas.
-    """
-
-    pin_fila = 17       # Relé fila
-    pin_columna = 12    # Relé columna
-    pin_sensor = 25     # Sensor infrarrojo
-
-    try:
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(True)
-
-        # Configuración inicial: relés en LOW (desactivados), sensor con pull-down
-        GPIO.setup(pin_fila, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(pin_columna, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(pin_sensor, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
-        # Leer estado inicial del sensor
-        print(f"Estado inicial del sensor (pin {pin_sensor}): {GPIO.input(pin_sensor)}")
-        time.sleep(0.1)  # Espera para estabilizar
-
-        # Activar relés con HIGH (activo en alto)
-        GPIO.output(pin_fila, GPIO.HIGH)
-        GPIO.output(pin_columna, GPIO.HIGH)
-
-        print(f"Expedición en proceso (relés en HIGH), monitoreando sensor en pin {pin_sensor} por {tiempo_maximo} segundos...")
-
-        tiempo_inicio = time.time()
-        lecturas_consecutivas = 0
-        umbral_confirmacion = 5
-
-        while True:
-            if GPIO.input(pin_sensor):
-                lecturas_consecutivas += 1
-            else:
-                lecturas_consecutivas = 0
-
-            if lecturas_consecutivas >= umbral_confirmacion:
-                print("Sensor activado (movimiento detectado). Cancelando proceso.")
-                break
-
-            if time.time() - tiempo_inicio >= tiempo_maximo:
-                print(f"Tiempo máximo de {tiempo_maximo} segundos alcanzado. Terminando expendio.")
-                break
-
-            time.sleep(0.01)
-
-    except RuntimeError as e:
-        print("\nError en el proceso.")
-        print(e)
-
-    finally:
-        # Desactivar relés con LOW
-        GPIO.output(pin_fila, GPIO.LOW)
-        GPIO.output(pin_columna, GPIO.LOW)
-
-        print("Proceso finalizado, relés desactivados.")
-        GPIO.cleanup()
-
-import RPi.GPIO as GPIO
-import time
-
-def prueba_4(tiempo_espera=3):
-    """
-    Activa los relés uno por uno y monitorea si el sensor (pin 25) se activa.
-    Esto permite detectar cuál relé podría estar interfiriendo con el sensor.
-    """
-
-    pin_fila = 17       # Relé fila
-    pin_columna = 12    # Relé columna
-    pin_sensor = 25     # Sensor infrarrojo
-
-    try:
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(True)
-
-        GPIO.setup(pin_fila, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(pin_columna, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(pin_sensor, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
-        print("Iniciando prueba de relés individuales...\n")
-
-        # Desactivar ambos relés por si acaso
-        GPIO.output(pin_fila, GPIO.LOW)
-        GPIO.output(pin_columna, GPIO.LOW)
-
-        time.sleep(1)
-
-        # --- Activar solo FILA ---
-        print("Activando relé FILA...")
-        GPIO.output(pin_fila, GPIO.HIGH)
-
-        for i in range(tiempo_espera * 100):
-            if GPIO.input(pin_sensor):
-                print("⚠️  Sensor ACTIVADO al encender FILA")
-                break
-            time.sleep(0.01)
-        else:
-            print("✅ Sensor sin activación al encender FILA")
-
-        GPIO.output(pin_fila, GPIO.LOW)
-        time.sleep(1)
-
-        # --- Activar solo COLUMNA ---
-        print("\nActivando relé COLUMNA...")
-        GPIO.output(pin_columna, GPIO.HIGH)
-
-        for i in range(tiempo_espera * 100):
-            if GPIO.input(pin_sensor):
-                print("⚠️  Sensor ACTIVADO al encender COLUMNA")
-                break
-            time.sleep(0.01)
-        else:
-            print("✅ Sensor sin activación al encender COLUMNA")
-
-        GPIO.output(pin_columna, GPIO.LOW)
-
-    except Exception as e:
-        print("\n❌ Error durante la prueba:")
-        print(e)
-
-    finally:
-        GPIO.output(pin_fila, GPIO.LOW)
-        GPIO.output(pin_columna, GPIO.LOW)
-        GPIO.cleanup()
-        print("\n🔚 Prueba finalizada, relés apagados.")
 
 
 
@@ -475,10 +293,10 @@ if __name__ == "__main__":
         opcion = sys.argv[1]
 
         if opcion == "1":
-            #activar_espiral_con_sensor_y_tiempo(tiempo_maximo=5)
+            #activar_espiral_en_low(tiempo_maximo=5)
             #prueba_1(tiempo_maximo=5)
-            prueba_2()
-            #prueba_3()
+            activar_espilar_en_high()
+          
             #prueba_4()
         elif opcion == "2":
             probar_sensor_infrarrojo()

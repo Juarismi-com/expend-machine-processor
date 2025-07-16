@@ -1,4 +1,4 @@
-from env import API_URL, MACHINE_ID, BANCARD_API_URL, APP_PLATFORM
+from env import API_URL, MACHINE_ID, BANCARD_API_URL, APP_PLATFORM, MODO_RELES
 from flask import jsonify
 import requests
 import logging
@@ -25,7 +25,7 @@ session.mount("http://", adapter)
 session.mount("https://", adapter)
 
 if (APP_PLATFORM == "raspberry"):
-    from services.slot_service import activar_espiral_con_sensor_y_tiempo
+    from services.slot_service import activar_espiral_en_low, activar_espilar_en_high
 
 def handle_response(res):
     try:
@@ -90,12 +90,15 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
         # si no se pudo procesar el pago
         if res_bancard.status_code != 200:
             return {
-                "message": "No se pudo realizar la venta"
+                "message": "No se pudo confirmar la venta"
             }
 
         # si estamos en raspberry y se proceso el pago
         if (APP_PLATFORM == "raspberry"):
-            activar_espiral_con_sensor_y_tiempo(fila, columna, ESPIRAL_TIEMPO_SEGUNDOS)
+            if MODO_RELES == 1:
+                activar_espilar_en_high(fila, columna, ESPIRAL_TIEMPO_SEGUNDOS)
+            else:
+                activar_espiral_en_low(fila, columna, ESPIRAL_TIEMPO_SEGUNDOS)
 
         payload_success = {
             "metodo_pago": metodo_pago,
