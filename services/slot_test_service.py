@@ -286,22 +286,20 @@ def activar_espilar_en_high(tiempo_maximo=5):
 # Ejecutar si se llama directamente
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Debes indicar la función: 'sensor' o 'expender'")
+        print("Usa 1 (espiral low), 2 (espiral high). o 3 (probar sensor de movimiento)")
         sys.exit(1)
 
     try:
         opcion = sys.argv[1]
 
         if opcion == "1":
-            #activar_espiral_en_low(tiempo_maximo=5)
-            #prueba_1(tiempo_maximo=5)
-            activar_espilar_en_high()
-          
-            #prueba_4()
+            activar_espiral_en_low(tiempo_maximo=5)
         elif opcion == "2":
+            activar_espilar_en_high(tiempo_maximo=5)
+        elif opcion == "3":
             probar_sensor_infrarrojo()
         else:
-            print("Opción no válida. Usa 1 (sensor) o 2 (expender).")
+            print("Opción no válida. Usa 1 (espiral low), 2 (espiral high). o 3 (probar sensor de movimiento)")
            
     except KeyboardInterrupt:
         print("\nInterrumpido por el usuario.")
