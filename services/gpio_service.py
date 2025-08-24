@@ -32,3 +32,22 @@ def activate_rele(pin, seconds):
         logger.info("Limpiando GPIO (activate_rele)")
         GPIO.cleanup()
 
+
+def deactivce_rele(pin):
+    """Desactiva el sistema de rele"""
+    try:
+        GPIO.setmode(GPIO.BCM)
+        logger.info("GPIO inicializado en modo BCM")
+        GPIO.setwarnings(True)
+
+        GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
+        logger.info(f"Desactiva relés en pines {pin}")
+
+        GPIO.output(pin, GPIO.HIGH)
+        
+    except (RuntimeError, KeyboardInterrupt) as e:
+        logger.error("Error durante deactivce_rele: %s", e)
+
+    finally:
+        logger.info("Limpiando GPIO (deactivce_rele)")
+        GPIO.cleanup()

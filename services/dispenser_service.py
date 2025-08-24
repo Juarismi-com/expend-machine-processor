@@ -9,6 +9,6 @@ def select_option(option):
             activate_rele(17, 5)
             
         if (option == 2):
-            activate_rele(27, 5)
+            activate_rele(26, 5)
 
     return option
