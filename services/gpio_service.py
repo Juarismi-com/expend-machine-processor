@@ -36,12 +36,12 @@ def activate_rele(pin, seconds):
         
         GPIO.output(pin, GPIO.LOW)
         time.sleep(seconds)
-        GPIO.output(pin, GPIO.HIGH)
+        
 
     except (RuntimeError, KeyboardInterrupt) as e:
-        logger.error("Error durante active_slot: %s", e)
+        logger.error("Error durante activate_rele: %s", e)
 
     finally:
-        logger.info("Limpiando GPIO (active_slot)")
+        logger.info("Limpiando GPIO (activate_rele)")
         GPIO.cleanup()
 
