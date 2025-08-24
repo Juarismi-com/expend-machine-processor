@@ -1,5 +1,12 @@
 # expend-machine-procesor
 
+### IMPORTANTE! al inicializar el proyecto en el raspberry
+```sh
+$ ## Generar la carpeta en el raspberry y luego clonar el repo
+mkdir /home/rasp/automatica-vending
+```
+
+
 ### Inicializar el proyecto localmente
 ```sh
 $ python3 -m venv .venv
@@ -14,7 +21,6 @@ $ pip3 install -r ./requirements-pi.txt
 ## Inicializar la base de datos, luego de activar el .env
 $ flask init-db
 ```
-
 
 ### Ejecutar el proyecto
 ```sh
