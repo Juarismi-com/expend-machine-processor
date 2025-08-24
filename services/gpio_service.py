@@ -26,7 +26,7 @@ def init_gpio():
         logger.debug("GPIO ya estaba inicializado")
 
 
-def activate_rele(pin, time):
+def activate_rele(pin, seconds):
     """Activa cada relé uno por uno durante 5 segundos, luego lo apaga."""
     try:
         init_gpio()
@@ -35,7 +35,7 @@ def activate_rele(pin, time):
         logger.info(f"Activando relés en pines {pin}")
         
         GPIO.output(pin, GPIO.LOW)
-        time.sleep(time)
+        time.sleep(seconds)
         GPIO.output(pin, GPIO.HIGH)
 
     except (RuntimeError, KeyboardInterrupt) as e:
