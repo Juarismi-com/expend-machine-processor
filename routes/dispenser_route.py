@@ -7,8 +7,8 @@ bp = Blueprint('dispensers', __name__)
 def request_option_withouy_pay():
     if request.method == "POST":
         data = request.get_json()
-        option = data.get('option')
+        opcion = data.get('opcion')
 
-        select_option(option)
+        select_option(opcion)
         return data
 
