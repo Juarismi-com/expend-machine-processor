@@ -43,8 +43,8 @@ Table productos {
 }
 
 Table maquinas {
-  id INTEGER [pk, increment]
-  uuid TEXT
+  id INTEGER [pk, increment] 
+  uuid TEXT [uk]
   local_id INTEGER
 }
 
@@ -56,7 +56,7 @@ Table slot_config {
   activo BOOLEAN [default: true]
 }
 
-Table slots {
+Table slots { // podemos moverlo y tomarlo como opciones
   id INTEGER [pk, increment]
   maquina_id TEXT
   slot_num INTEGER

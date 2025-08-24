@@ -2,6 +2,7 @@ from flask import Flask, jsonify, abort, g, request, make_response
 from flask_cors import CORS
 from routes.vending_route import bp as vending_bp
 from routes.slot_route import slot_bp
+from routes.dispenser_route import bp as dispenser_bp
 from database.conn import get_db
 from env import APP_DEBUG, AUTH_TOKEN
 import subprocess
@@ -37,6 +38,7 @@ def handle_options():
         return response, 200
 app.register_blueprint(vending_bp, url_prefix="/vending")
 app.register_blueprint(slot_bp, url_prefix="/slots")
+app.register_blueprint(dispenser_bp, url_prefix="/dispensers")
 
 # Muestra el listado de rutas configuradas 
 with app.app_context():
