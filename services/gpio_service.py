@@ -16,8 +16,7 @@ def init_gpio():
     global GPIO_initialized
     if not GPIO_initialized:
         try:
-            GPIO.setmode(GPIO.BCM)
-            GPIO.setwarnings(True)
+            
             GPIO_initialized = True
             logger.info("GPIO inicializado en modo BCM")
         except RuntimeError as e:
@@ -29,13 +28,15 @@ def init_gpio():
 def activate_rele(pin, seconds):
     """Activa cada relé uno por uno durante 5 segundos, luego lo apaga."""
     try:
-        init_gpio()
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(True)
 
         GPIO.setup(pin, GPIO.OUT, initial=GPIO.LOW)
         logger.info(f"Activando relés en pines {pin}")
         
         GPIO.output(pin, GPIO.LOW)
         time.sleep(seconds)
+        GPIO.output(pin, GPIO.HIGH)
         
 
     except (RuntimeError, KeyboardInterrupt) as e:
