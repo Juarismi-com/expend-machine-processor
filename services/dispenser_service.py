@@ -7,7 +7,7 @@ def select_option(option):
     print('prueba')
     if (APP_PLATFORM == "raspberry"):
         if (option == 1):
-            activate_rele(17, 7)
+            activate_rele(17, 8)
             
         if (option == 2):
             activate_rele(26, 5)
