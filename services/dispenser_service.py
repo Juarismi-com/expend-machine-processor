@@ -4,12 +4,11 @@ if (APP_PLATFORM == "raspberry"):
     from services.gpio_service import activate_rele 
 
 def select_option(option):
-    print('prueba')
     if (APP_PLATFORM == "raspberry"):
         if (option == 1):
-            activate_rele(17, 8)
+            activate_rele(17, 1)
             
         if (option == 2):
-            activate_rele(26, 5)
+            activate_rele(26, 1)
 
     return option

@@ -51,3 +51,7 @@ def deactivce_rele(pin):
     finally:
         logger.info("Limpiando GPIO (deactivce_rele)")
         GPIO.cleanup()
+
+
+if __name__ == "__main__":
+    activate_rele(17, 1)
