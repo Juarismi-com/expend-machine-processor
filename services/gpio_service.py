@@ -54,4 +54,4 @@ def deactivce_rele(pin):
 
 
 if __name__ == "__main__":
-    activate_rele(17, 1)
+    activate_rele(17, 0.0001)

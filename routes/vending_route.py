@@ -3,6 +3,7 @@ from services.vending_service import create_pending_vending, confirm_vending_car
 bp = Blueprint('vending', __name__)
 from flask_cors import cross_origin
 
+
 @bp.route("/", methods=['GET', 'POST', 'OPTIONS'])
 def create_vending():
     
