@@ -23,6 +23,7 @@ def activate_rele(pin, seconds):
         GPIO.output(pin, GPIO.LOW)
         time.sleep(seconds)
         GPIO.output(pin, GPIO.HIGH)
+        deactivce_rele(pin)
         
 
     except (RuntimeError, KeyboardInterrupt) as e:
