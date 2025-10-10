@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 from services.dispenser_service import select_option, submit_bancard
 
 bp = Blueprint('dispensers', __name__)
@@ -19,7 +19,9 @@ def submit_bancard_pay():
         data = request.get_json()
         metodo_pago = data.get('metodo_pago')
         precio = data.get('precio')
+        option = data.get('opcion')
+        payment_url = data.get('payment_url')
 
-        return submit_bancard(precio, metodo_pago)
+        return submit_bancard(precio, metodo_pago, option, payment_url)
 
 

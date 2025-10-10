@@ -25,17 +25,17 @@ if (APP_PLATFORM == "raspberry"):
 def select_option(option):
     if (APP_PLATFORM == "raspberry"):
         if (option == 1):
-            activate_rele(17, 0.002)
+            activate_rele(17, 0.5)
             
         if (option == 2):
-            activate_rele(18, 0.002)
+            activate_rele(18, 0.5)
 
     return option
 
 
 
 ## UX es lo mismo que tarjeta o contact less
-def submit_bancard(precio, metodo_pago="ux", option=1):
+def submit_bancard(precio, metodo_pago="ux", option=1, payment_url=""):
     try:
         
         # enviamos a bancard
@@ -47,9 +47,9 @@ def submit_bancard(precio, metodo_pago="ux", option=1):
         }
 
         if (metodo_pago == "qr"):
-            res_bancard = session.post(BANCARD_API_URL + "/pos/venta-qr", json=payload_bancard, timeout=DEFAULT_TIMEOUT)
+            res_bancard = session.post(payment_url + "/pos/venta-qr", json=payload_bancard, timeout=DEFAULT_TIMEOUT)
         else:
-            res_bancard = session.post(BANCARD_API_URL + "/pos/venta-ux", json=payload_bancard, timeout=DEFAULT_TIMEOUT)
+            res_bancard = session.post(payment_url + "/pos/venta-ux", json=payload_bancard, timeout=DEFAULT_TIMEOUT)
 
         # si no se pudo procesar el pago
         if res_bancard.status_code != 200:
