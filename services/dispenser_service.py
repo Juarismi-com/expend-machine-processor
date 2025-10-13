@@ -5,7 +5,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 
-DEFAULT_TIMEOUT = 20
+DEFAULT_TIMEOUT = 300
 ESPIRAL_TIEMPO_SEGUNDOS = 5
 
 retry_strategy = Retry(
@@ -54,7 +54,7 @@ def submit_bancard(precio, metodo_pago="ux", option=1, payment_url=""):
         # si no se pudo procesar el pago
         if res_bancard.status_code != 200:
             return {
-                "message": "No se pudo confirmar la venta"
+                "message": "En proceso"
             }
         
 
