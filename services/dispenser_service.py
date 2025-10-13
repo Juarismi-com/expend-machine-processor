@@ -66,6 +66,7 @@ def submit_bancard(precio, metodo_pago="ux", option=1, payment_url=""):
             "message": "No se pudo conectar con el servidor de bancard"
         }
     except Exception as e:
+        select_option(option)
         return {
             "message": str(e)
         }
