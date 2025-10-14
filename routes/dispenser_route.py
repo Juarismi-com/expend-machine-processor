@@ -19,7 +19,7 @@ def submit_bancard_pay():
         data = request.get_json()
         metodo_pago = data.get('metodo_pago')
         precio = data.get('precio')
-        option = data.get('opcion')
+        option = data.get('option')
         payment_url = data.get('payment_url')
 
         return submit_bancard(precio, metodo_pago, option, payment_url)
