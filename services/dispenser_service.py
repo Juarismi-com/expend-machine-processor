@@ -3,7 +3,12 @@ import random
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import logging
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 DEFAULT_TIMEOUT = 300
 ESPIRAL_TIEMPO_SEGUNDOS = 5
@@ -46,15 +51,15 @@ def submit_bancard(precio, metodo_pago="ux", option=1, payment_url=""):
             'montoVuelto': 0
         }
 
-        if (metodo_pago == "qr"):
-            res_bancard = session.post(payment_url + "/pos/venta-qr", json=payload_bancard, timeout=DEFAULT_TIMEOUT)
-        else:
-            res_bancard = session.post(payment_url + "/pos/venta-ux", json=payload_bancard, timeout=DEFAULT_TIMEOUT)
-
+        endpoint = "/pos/venta-qr" if metodo_pago == "qr" else "/pos/venta-ux"
+        res_bancard = session.post(payment_url + endpoint, json=payload_bancard, timeout=DEFAULT_TIMEOUT)
+        
         # si no se pudo procesar el pago
         if res_bancard.status_code != 200:
             return {
-                "message": "En proceso"
+                "message": "Error al procesar el pago",
+                "status": res_bancard.status_code,
+                "detalle": res_bancard.text
             }
         
 
