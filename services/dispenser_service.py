@@ -29,13 +29,20 @@ if (APP_PLATFORM == "raspberry"):
 
 def select_option(option):
     logging.info("Ejecutando select_option")
-    if (APP_PLATFORM == "raspberry"):
-        print (option)
-        if (option == 1):
-            activate_rele(17, 0.5)
-            
-        if (option == 2):
-            activate_rele(18, 0.5)
+
+    try:
+        if APP_PLATFORM == "raspberry":
+            print(option)
+
+            if option == 1:
+                activate_rele(17, 0.5)
+            elif option == 2:
+                activate_rele(18, 0.5)
+            else:
+                logging.warning(f"Opción no válida: {option}")
+
+    except Exception as e:
+        logging.error(f"Error al ejecutar select_option: {e}")
 
     return option
 
