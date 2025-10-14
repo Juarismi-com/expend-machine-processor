@@ -29,6 +29,7 @@ if (APP_PLATFORM == "raspberry"):
 
 def select_option(option):
     if (APP_PLATFORM == "raspberry"):
+        print (option)
         if (option == 1):
             activate_rele(17, 0.5)
             
