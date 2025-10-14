@@ -55,6 +55,8 @@ def submit_bancard(precio, metodo_pago="ux", option=1, payment_url=""):
         endpoint = "/pos/venta-qr" if metodo_pago == "qr" else "/pos/venta-ux"
         res_bancard = session.post(payment_url + endpoint, json=payload_bancard, timeout=DEFAULT_TIMEOUT)
         
+        
+        print("prueba")
         # si no se pudo procesar el pago
         if res_bancard.status_code != 200:
             return {
