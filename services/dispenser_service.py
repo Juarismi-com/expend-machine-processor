@@ -42,39 +42,57 @@ def select_option(option):
 
 ## UX es lo mismo que tarjeta o contact less
 def submit_bancard(precio, metodo_pago="ux", option=1, payment_url=""):
+    if not payment_url:
+        logging.error("URL de pago no proporcionada")
+        return {"message": "URL de pago no proporcionada"}
+    
     try:
-        
-        # enviamos a bancard
-        # seleccionamos tipo de venta a generaar
+        factura_nro = random.randint(1, 10000)
         payload_bancard = {
-            'facturaNro': random.randint(1, 10000),
+            'facturaNro': factura_nro,
             'monto': precio,
             'montoVuelto': 0
         }
 
         endpoint = "/pos/venta-qr" if metodo_pago == "qr" else "/pos/venta-ux"
-        res_bancard = session.post(payment_url + endpoint, json=payload_bancard, timeout=DEFAULT_TIMEOUT)
-        
-        
-        print("prueba")
-        # si no se pudo procesar el pago
+        url = payment_url + endpoint
+
+        logging.info(f"Enviando solicitud a Bancard: URL={url}, Payload={payload_bancard}")
+
+        res_bancard = session.post(
+            url,
+            json=payload_bancard,
+            timeout=DEFAULT_TIMEOUT
+        )
+
         if res_bancard.status_code != 200:
+            logging.warning(
+                f"Respuesta no exitosa de Bancard: "
+                f"Status={res_bancard.status_code}, Body={res_bancard.text}"
+            )
             return {
                 "message": "Error al procesar el pago",
                 "status": res_bancard.status_code,
                 "detalle": res_bancard.text
             }
-        
 
+        logging.info("Pago procesado correctamente, ejecutando select_option")
         select_option(option)
-        
-        return res_bancard.json()
+
+        response_json = res_bancard.json()
+        logging.debug(f"Respuesta JSON de Bancard: {response_json}")
+        return response_json
+
     except requests.exceptions.Timeout:
+        logging.error("Timeout al conectar con Bancard")
+        select_option(option)  # opcional
         return {
             "message": "No se pudo conectar con el servidor de bancard"
         }
+
     except Exception as e:
+        logging.exception(f"Excepción inesperada en submit_bancard: {e}")
         select_option(option)
         return {
-            "message": str(e)
+            "message": f"Error inesperado: {str(e)}"
         }
