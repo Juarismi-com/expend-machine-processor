@@ -28,6 +28,7 @@ if (APP_PLATFORM == "raspberry"):
     from services.gpio_service import activate_rele 
 
 def select_option(option):
+    logging.info("Ejecutando select_option")
     if (APP_PLATFORM == "raspberry"):
         print (option)
         if (option == 1):
@@ -76,7 +77,7 @@ def submit_bancard(precio, metodo_pago="ux", option=1, payment_url=""):
                 "detalle": res_bancard.text
             }
 
-        logging.info("Pago procesado correctamente, ejecutando select_option")
+        logging.info("Pago procesado correctamente")
         select_option(option)
 
         response_json = res_bancard.json()
