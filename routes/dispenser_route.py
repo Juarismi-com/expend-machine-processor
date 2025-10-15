@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from services.dispenser_service import select_option, submit_bancard
+import asyncio
 
 bp = Blueprint('dispensers', __name__)
 
@@ -22,6 +23,6 @@ def submit_bancard_pay():
         option = data.get('option')
         payment_url = data.get('payment_url')
 
-        return submit_bancard(precio, metodo_pago, option, payment_url)
+        return asyncio.run(submit_bancard(precio, metodo_pago, option, payment_url))
 
 

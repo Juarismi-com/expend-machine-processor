@@ -5,3 +5,4 @@ adafruit-blinka==8.28.0
 Flask-CORS==3.0.10
 requests==2.32.4
 jsonify==0.5
+aiohttp>=3.9.0

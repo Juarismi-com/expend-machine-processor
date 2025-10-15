@@ -4,6 +4,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import logging
+import aiohttp
 
 logging.basicConfig(
     level=logging.INFO,
@@ -47,55 +48,119 @@ def select_option(option):
     return option
 
 
-
-## UX es lo mismo que tarjeta o contact less
-def submit_bancard(precio, metodo_pago="ux", option=1, payment_url=""):
+async def submit_bancard(precio, metodo_pago="ux", option=1, payment_url=""):
     if not payment_url:
         logging.error("URL de pago no proporcionada")
         return {"message": "URL de pago no proporcionada"}
-    
+
+    payment_url = payment_url.rstrip("/")  # Evita // en la URL
+    factura_nro = random.randint(1, 10000)
+
+    payload_bancard = {
+        'facturaNro': factura_nro,
+        'monto': precio,
+        'montoVuelto': 0
+    }
+
     try:
-        factura_nro = random.randint(1, 10000)
-        payload_bancard = {
-            'facturaNro': factura_nro,
-            'monto': precio,
-            'montoVuelto': 0
-        }
+        async with aiohttp.ClientSession() as session:
+            # --- 1) Método QR ---
+            if metodo_pago == "qr":
+                async with session.post(
+                    f"{payment_url}/pos/venta-qr",
+                    json=payload_bancard,
+                    timeout=DEFAULT_TIMEOUT
+                ) as res_bancard:
+                    status = res_bancard.status
+                    body_text = await res_bancard.text()
 
-        endpoint = "/pos/venta-qr" if metodo_pago == "qr" else "/pos/venta-ux"
-        url = payment_url + endpoint
+            # --- 2) Método UX ---
+            else:
+                # POST a /pos/venta-ux
+                async with session.post(
+                    f"{payment_url}/pos/venta-ux",
+                    json=payload_bancard,
+                    timeout=DEFAULT_TIMEOUT
+                ) as res_venta:
+                    if res_venta.status != 200:
+                        logging.warning(
+                            f"Respuesta no exitosa del pos (venta-ux): "
+                            f"Status={res_venta.status}, Body={await res_venta.text()}"
+                        )
+                        return {
+                            "message": "Error en la venta previa",
+                            "status": res_venta.status,
+                            "detalle": await res_venta.text()
+                        }
 
-        logging.info(f"Enviando solicitud a Bancard: URL={url}, Payload={payload_bancard}")
+                    try:
+                        data = await res_venta.json()
+                    except Exception:
+                        text_err = await res_venta.text()
+                        logging.error(
+                            f"La respuesta del pos (venta-ux) no es JSON: {text_err}"
+                        )
+                        return {
+                            "message": "Respuesta inválida del pos (venta-ux)",
+                            "status": res_venta.status,
+                            "detalle": text_err
+                        }
 
-        res_bancard = session.post(
-            url,
-            json=payload_bancard,
-            timeout=DEFAULT_TIMEOUT
-        )
+                # Validar nsu/bin
+                nsu = data.get('nsu')
+                bin_ = data.get('bin')
 
-        if res_bancard.status_code != 200:
-            logging.warning(
-                f"Respuesta no exitosa de Bancard: "
-                f"Status={res_bancard.status_code}, Body={res_bancard.text}"
-            )
-            return {
-                "message": "Error al procesar el pago",
-                "status": res_bancard.status_code,
-                "detalle": res_bancard.text
-            }
+                if not nsu or not bin_:
+                    logging.error(f"Faltan nsu o bin en la respuesta: {data}")
+                    return {
+                        "message": "No se pudo obtener nsu/bin para el descuento",
+                        "detalle": data
+                    }
 
-        logging.info("Pago procesado correctamente")
+                # POST a /pos/descuento
+                async with session.post(
+                    f"{payment_url}/pos/descuento",
+                    json={'nsu': nsu, 'bin': bin_, 'monto': precio},
+                    timeout=DEFAULT_TIMEOUT
+                ) as res_bancard:
+                    status = res_bancard.status
+                    body_text = await res_bancard.text()
+
+            # --- 3) Verificación final ---
+            if status != 200:
+                logging.warning(
+                    f"Respuesta no exitosa de Bancard: "
+                    f"Status={status}, Body={body_text}"
+                )
+                return {
+                    "message": "Error al procesar el pago",
+                    "status": status,
+                    "detalle": body_text
+                }
+
+            try:
+                response_json = await res_bancard.json()
+            except Exception:
+                logging.error(
+                    f"La respuesta de Bancard no es JSON: {body_text}"
+                )
+                return {
+                    "message": "Respuesta inválida de Bancard",
+                    "status": status,
+                    "detalle": body_text
+                }
+
+            logging.info("Pago procesado correctamente")
+            logging.debug(f"Respuesta JSON de Bancard: {response_json}")
+
+            select_option(option)
+            return response_json
+
+    except aiohttp.ClientConnectionError:
+        logging.error("Timeout o conexión fallida con Bancard")
         select_option(option)
-
-        response_json = res_bancard.json()
-        logging.debug(f"Respuesta JSON de Bancard: {response_json}")
-        return response_json
-
-    except requests.exceptions.Timeout:
-        logging.error("Timeout al conectar con Bancard")
-        select_option(option)  # opcional
         return {
-            "message": "No se pudo conectar con el servidor de bancard"
+            "message": "No se pudo conectar con el servidor de Bancard"
         }
 
     except Exception as e:
