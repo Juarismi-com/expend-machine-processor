@@ -173,7 +173,7 @@ def probar_sensor_infrarrojo():
             estado = GPIO.input(pin_sensor)
             logger.info("Movimiento detectado. Interrumpiendo expendio.")
             
-            if estado == GPIO.HIGH:
+            if estado == GPIO.LOW:
                 print("➡ Movimiento detectado.")
             else:
                 print("⏸ Sin movimiento.")

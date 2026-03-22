@@ -52,3 +52,39 @@ def get_slot_by_slot_id(slot_num):
 
     except Exception as e:
         return jsonify({"error": "Error inesperado", "details": str(e)}), 500
+
+
+@slot_bp.route('/prueba', methods=['GET'])
+def get_slot_by_fila_columna(fila, columna):
+    try:
+        if APP_PLATFORM == "raspberry":    
+            if MODO_RELES == 1:
+                activar_espilar_en_high(fila, columna, 5)
+            else:
+                activar_espiral_en_low(fila, columna, 5)
+
+        return jsonify({
+            "status": "ok",
+            "fila": fila,
+            "columna": columna
+        })
+
+    except requests.exceptions.RequestException as e:
+        error_details = ""
+        if e.response is not None:
+            try:
+                error_details = e.response.json()
+            except ValueError:
+                error_details = e.response.text
+
+        return jsonify({
+            "error": "Error al contactar el servidor central",
+            "details": str(e),
+            "server_response": error_details
+        }), 502
+
+    except ValueError:
+        return jsonify({"error": "Respuesta inválida del servidor central (no es JSON)"}), 500
+
+    except Exception as e:
+        return jsonify({"error": "Error inesperado", "details": str(e)}), 500
