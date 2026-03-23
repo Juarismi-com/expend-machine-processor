@@ -54,7 +54,7 @@ def get_slot_by_slot_id(slot_num):
         return jsonify({"error": "Error inesperado", "details": str(e)}), 500
 
 
-@slot_bp.route('/prueba', methods=['GET'])
+@slot_bp.route('fila/<int:fila>/<int:columna>', methods=['GET'])
 def get_slot_by_fila_columna(fila, columna):
     try:
         if APP_PLATFORM == "raspberry":    
