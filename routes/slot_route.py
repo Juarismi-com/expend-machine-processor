@@ -61,7 +61,7 @@ def get_slot_by_fila_columna(fila, columna):
             if MODO_RELES == 1:
                 activar_espilar_en_high(fila, columna, 5)
             else:
-                activar_espiral_en_low(fila, columna, 5)
+                activar_espiral_en_low(fila, columna, 60)
 
         return jsonify({
             "status": "ok",
