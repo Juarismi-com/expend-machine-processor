@@ -104,7 +104,7 @@ def activar_espilar_en_high(pin_fila, pin_columna, tiempo_maximo=5):
         GPIO.cleanup()
 
 
-def activar_espiral_en_low(pin_fila, pin_columna, tiempo_maximo=5):
+def activar_espiral_en_low(pin_fila, pin_columna, tiempo_maximo=20):
     """
     Activa dos relés para expendio y monitoriza sensor en pin definido.
     Si el sensor infrarrojo detecta presencia, se interrumpe el proceso.
@@ -131,7 +131,7 @@ def activar_espiral_en_low(pin_fila, pin_columna, tiempo_maximo=5):
             sensor_estado = GPIO.input(pin_sensor)
             logger.debug(f"Sensor (pin {pin_sensor}) estado: {sensor_estado}")
 
-            if sensor_estado == GPIO.HIGH:
+            if sensor_estado == GPIO.LOW:
                 logger.info("Movimiento detectado por el sensor. Interrumpiendo expendio.")
                 break
 
