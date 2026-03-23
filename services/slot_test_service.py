@@ -161,7 +161,7 @@ def activar_espiral_en_low(tiempo_maximo=10):
         tiempo_inicio = time.time()
 
         while True:
-            if GPIO.input(pin_sensor) == GPIO.HIGH:
+            if GPIO.input(pin_sensor) == GPIO.LOW:
                 print("Movimiento detectado. Interrumpiendo expendio.")
                 break
 
