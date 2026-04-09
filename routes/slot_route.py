@@ -59,9 +59,9 @@ def get_slot_by_fila_columna(fila, columna):
     try:
         if APP_PLATFORM == "raspberry":    
             if MODO_RELES == 1:
-                activar_espilar_en_high(fila, columna, 5)
+                activar_espilar_en_high(fila, columna, 20)
             else:
-                activar_espiral_en_low(fila, columna, 60)
+                activar_espiral_en_low(fila, columna, 20)
 
         return jsonify({
             "status": "ok",
