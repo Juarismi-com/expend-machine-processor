@@ -77,7 +77,7 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
         # payload bancard
         payload_bancard = {
             'facturaNro': response_vendind_pending['id'],
-            'monto': 2,
+            'monto': int(float(response_vendind_pending.get('precio_venta', 0))),
             'montoVuelto': 0
         }
 
