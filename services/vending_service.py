@@ -60,7 +60,7 @@ def get_vending_by_id(vending_id):
     except requests.exceptions.RequestException as e:
         return {'error': str(e)}
 
-def     confirm_vending_card(vending_id, metodo_pago="TARJETA"):
+def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
     try:
         # traemos info de la venta remota
         response_vendind_pending = get_vending_by_id(vending_id)
@@ -74,46 +74,84 @@ def     confirm_vending_card(vending_id, metodo_pago="TARJETA"):
         if fila is None or columna is None:
             return {"message": "Configuración de fila o columna no válida"}
 
-        # enviamos a bancard
-        # seleccionamos tipo de venta a generaar
+        # payload bancard
         payload_bancard = {
             'facturaNro': response_vendind_pending['id'],
             'monto': int(float(response_vendind_pending.get('precio_venta', 0))),
             'montoVuelto': 0
         }
 
-        if (metodo_pago == "qr"):
-            res_bancard = session.post(BANCARD_API_URL + "/pos/venta-qr", json=payload_bancard, timeout=DEFAULT_TIMEOUT)
-        else:
-            res_bancard = session.post(BANCARD_API_URL + "/pos/venta-ux", json=payload_bancard, timeout=DEFAULT_TIMEOUT)
+        # request bancard
+        url = (
+            BANCARD_API_URL + "/pos/venta-qr"
+            if metodo_pago == "qr"
+            else BANCARD_API_URL + "/pos/venta-ux"
+        )
 
-        # si no se pudo procesar el pago
-        print('ksdodksd')
-        print(res_bancard)
+        res_bancard = session.post(
+            url,
+            json=payload_bancard,
+            timeout=DEFAULT_TIMEOUT
+        )
+
+        # ---------------- DEBUG COMPLETO ----------------
+        print("\n========== BANCARD DEBUG ==========")
+        print("URL:", url)
+        print("STATUS:", res_bancard.status_code)
+        print("HEADERS:", dict(res_bancard.headers))
+        print("RAW TEXT:", res_bancard.text)
+
+        bancard_json = None
+        try:
+            bancard_json = res_bancard.json()
+            print("JSON PARSED:", bancard_json)
+        except Exception as e:
+            print("ERROR PARSE JSON:", str(e))
+        print("===================================\n")
+        # ------------------------------------------------
+
+        # si falla bancard
         if res_bancard.status_code != 200:
             return {
-                "message": "No se pudo confirmar la venta"
+                "message": "No se pudo confirmar la venta",
+                "bancard_status": res_bancard.status_code,
+                "bancard_response": res_bancard.text,
+                "bancard_json": bancard_json
             }
 
-        # si estamos en raspberry y se proceso el pago
-        if (APP_PLATFORM == "raspberry"):
+        # hardware raspberry
+        if APP_PLATFORM == "raspberry":
             if MODO_RELES == 1:
                 activar_espilar_en_high(fila, columna, ESPIRAL_TIEMPO_SEGUNDOS)
             else:
                 activar_espiral_en_low(fila, columna, ESPIRAL_TIEMPO_SEGUNDOS)
 
+        # actualizar venta
         payload_success = {
             "metodo_pago": metodo_pago,
             "estado": "A"
         }
 
-        res_update_vending = session.put(API_URL + "/ventas/" + vending_id, json=payload_success, timeout=DEFAULT_TIMEOUT)
+        res_update_vending = session.put(
+            API_URL + "/ventas/" + vending_id,
+            json=payload_success,
+            timeout=DEFAULT_TIMEOUT
+        )
 
-        return res_update_vending.json()
+        # retorno final
+        try:
+            return res_update_vending.json()
+        except Exception:
+            return {
+                "message": "Venta actualizada pero respuesta no es JSON",
+                "raw": res_update_vending.text
+            }
+
     except requests.exceptions.Timeout:
         return {
             "message": "No se pudo conectar con el servidor de bancard"
         }
+
     except Exception as e:
         return {
             "message": str(e)
