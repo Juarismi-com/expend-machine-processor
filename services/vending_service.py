@@ -62,7 +62,7 @@ def get_vending_by_id(vending_id):
 
 def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
     try:
-        # traemos info de la venta remota
+        # 1. traer venta
         response_vendind_pending = get_vending_by_id(vending_id)
 
         if 'error' in response_vendind_pending:
@@ -74,29 +74,39 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
         if fila is None or columna is None:
             return {"message": "Configuración de fila o columna no válida"}
 
-        # payload bancard
+        # 2. payload bancard (IMPORTANTE: id real)
         payload_bancard = {
-            'facturaNro': 123,
-            'monto': int(float(response_vendind_pending.get('precio_venta', 0))),
-            'montoVuelto': 0
+            "facturaNro": int(vending_id),
+            "monto": int(float(response_vendind_pending.get('precio_venta', 0))),
+            "montoVuelto": 0
         }
 
-        # request bancard
+        # 3. URL según método
         url = (
             BANCARD_API_URL + "/pos/venta-qr"
             if metodo_pago == "qr"
             else BANCARD_API_URL + "/pos/venta-ux"
         )
 
-        res_bancard = session.post(
+        # 4. headers (ESTO era lo que faltaba)
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": "PostmanRuntime/7.36.0"
+        }
+
+        # 5. request bancard (mejor sin session para evitar estado raro)
+        res_bancard = requests.post(
             url,
             json=payload_bancard,
+            headers=headers,
             timeout=DEFAULT_TIMEOUT
         )
 
-        # ---------------- DEBUG COMPLETO ----------------
+        # 6. debug fuerte (solo útil en desarrollo)
         print("\n========== BANCARD DEBUG ==========")
         print("URL:", url)
+        print("PAYLOAD:", payload_bancard)
         print("STATUS:", res_bancard.status_code)
         print("HEADERS:", dict(res_bancard.headers))
         print("RAW TEXT:", res_bancard.text)
@@ -104,13 +114,12 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
         bancard_json = None
         try:
             bancard_json = res_bancard.json()
-            print("JSON PARSED:", bancard_json)
+            print("JSON:", bancard_json)
         except Exception as e:
-            print("ERROR PARSE JSON:", str(e))
+            print("JSON ERROR:", str(e))
         print("===================================\n")
-        # ------------------------------------------------
 
-        # si falla bancard
+        # 7. error bancard
         if res_bancard.status_code != 200:
             return {
                 "message": "No se pudo confirmar la venta",
@@ -119,14 +128,14 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
                 "bancard_json": bancard_json
             }
 
-        # hardware raspberry
+        # 8. hardware raspberry
         if APP_PLATFORM == "raspberry":
             if MODO_RELES == 1:
                 activar_espilar_en_high(fila, columna, ESPIRAL_TIEMPO_SEGUNDOS)
             else:
                 activar_espiral_en_low(fila, columna, ESPIRAL_TIEMPO_SEGUNDOS)
 
-        # actualizar venta
+        # 9. actualizar venta
         payload_success = {
             "metodo_pago": metodo_pago,
             "estado": "A"
@@ -138,7 +147,6 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
             timeout=DEFAULT_TIMEOUT
         )
 
-        # retorno final
         try:
             return res_update_vending.json()
         except Exception:
@@ -148,11 +156,7 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
             }
 
     except requests.exceptions.Timeout:
-        return {
-            "message": "No se pudo conectar con el servidor de bancard"
-        }
+        return {"message": "Timeout contra servidor de Bancard"}
 
     except Exception as e:
-        return {
-            "message": str(e)
-        }
+        return {"message": str(e)}
