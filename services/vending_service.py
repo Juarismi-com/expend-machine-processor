@@ -133,7 +133,7 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
             }
 
             res_update_vending = session.put(
-                API_URL + "/ventas/" + vending_id,
+                API_URL + "/ventas/" + str(vending_id),
                 json=payload_success,
                 timeout=DEFAULT_TIMEOUT
             )
