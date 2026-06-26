@@ -10,18 +10,52 @@ if APP_PLATFORM == "raspberry":
 @slot_bp.route('/<int:slot_num>', methods=['GET'])
 def get_slot_by_slot_id(slot_num):
     try:
-        response = requests.get(f"{API_URL}/maquinas/{MACHINE_ID}/slot/{slot_num}", timeout=5)
+        response = requests.get(
+            f"{API_URL}/maquinas/{MACHINE_ID}/slot/{slot_num}",
+            timeout=5
+        )
+
         response.raise_for_status()
-        data = response.json()
 
-        config = data.get('config')
-        if not config or 'fila' not in config or 'columna' not in config:
-            return jsonify({"error": "Datos de slot incompletos"}), 500
+        # Verificar que el servidor realmente respondió JSON
+        content_type = response.headers.get("Content-Type", "")
+        if "application/json" not in content_type.lower():
+            return jsonify({
+                "error": "El servidor central no devolvió JSON",
+                "status_code": response.status_code,
+                "content_type": content_type,
+                "body": response.text
+            }), 502
 
-        fila = config['fila']
-        columna = config['columna']
+        # Intentar convertir a JSON
+        try:
+            data = response.json()
+        except ValueError:
+            return jsonify({
+                "error": "Respuesta inválida del servidor central (JSON mal formado)",
+                "status_code": response.status_code,
+                "content_type": content_type,
+                "body": response.text
+            }), 502
 
-        if APP_PLATFORM == "raspberry":    
+        config = data.get("config")
+
+        if not config:
+            return jsonify({
+                "error": "El servidor central no devolvió el objeto 'config'",
+                "response": data
+            }), 500
+
+        fila = config.get("fila")
+        columna = config.get("columna")
+
+        if fila is None or columna is None:
+            return jsonify({
+                "error": "Datos de slot incompletos",
+                "response": data
+            }), 500
+
+        if APP_PLATFORM == "raspberry":
             if MODO_RELES == 1:
                 activar_espilar_en_high(fila, columna, 5)
             else:
@@ -33,26 +67,43 @@ def get_slot_by_slot_id(slot_num):
             "columna": columna
         })
 
-    except requests.exceptions.RequestException as e:
-        error_details = ""
-        if e.response is not None:
-            try:
-                error_details = e.response.json()
-            except ValueError:
-                error_details = e.response.text
-
+    except requests.exceptions.Timeout:
         return jsonify({
-            "error": "Error al contactar el servidor central",
-            "details": str(e),
-            "server_response": error_details
+            "error": "Timeout al contactar el servidor central"
+        }), 504
+
+    except requests.exceptions.ConnectionError:
+        return jsonify({
+            "error": "No fue posible conectarse al servidor central"
         }), 502
 
-    except ValueError:
-        return jsonify({"error": "Respuesta inválida del servidor central (no es JSON)"}), 500
+    except requests.exceptions.HTTPError as e:
+        error_body = None
+
+        if e.response is not None:
+            try:
+                error_body = e.response.json()
+            except ValueError:
+                error_body = e.response.text
+
+        return jsonify({
+            "error": "El servidor central respondió con un error HTTP",
+            "status_code": e.response.status_code if e.response else None,
+            "details": str(e),
+            "server_response": error_body
+        }), 502
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "error": "Error al contactar el servidor central",
+            "details": str(e)
+        }), 502
 
     except Exception as e:
-        return jsonify({"error": "Error inesperado", "details": str(e)}), 500
-
+        return jsonify({
+            "error": "Error inesperado",
+            "details": str(e)
+        }), 500
 
 @slot_bp.route('/<int:fila>/<int:columna>', methods=['GET'])
 def get_slot_by_fila_columna(fila, columna):
