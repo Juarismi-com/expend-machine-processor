@@ -60,7 +60,7 @@ def get_vending_by_id(vending_id):
     except requests.exceptions.RequestException as e:
         return {'error': str(e)}
 
-def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
+def     confirm_vending_card(vending_id, metodo_pago="TARJETA"):
     try:
         # traemos info de la venta remota
         response_vendind_pending = get_vending_by_id(vending_id)
@@ -88,6 +88,8 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
             res_bancard = session.post(BANCARD_API_URL + "/pos/venta-ux", json=payload_bancard, timeout=DEFAULT_TIMEOUT)
 
         # si no se pudo procesar el pago
+        print('ksdodksd')
+        print(res_bancard)
         if res_bancard.status_code != 200:
             return {
                 "message": "No se pudo confirmar la venta"
