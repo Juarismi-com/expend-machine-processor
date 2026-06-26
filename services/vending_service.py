@@ -96,6 +96,7 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
         }
 
         # 5. request bancard (mejor sin session para evitar estado raro)
+        logger.info("Enviando request a Bancard: url=%s payload=%s", url, payload_bancard)
         res_bancard = requests.post(
             url,
             json=payload_bancard,
@@ -103,60 +104,62 @@ def confirm_vending_card(vending_id, metodo_pago="TARJETA"):
             timeout=DEFAULT_TIMEOUT
         )
 
-        # 6. debug fuerte (solo útil en desarrollo)
-        print("\n========== BANCARD DEBUG ==========")
-        print("URL:", url)
-        print("PAYLOAD:", payload_bancard)
-        print("STATUS:", res_bancard.status_code)
-        print("HEADERS:", dict(res_bancard.headers))
-        print("RAW TEXT:", res_bancard.text)
+        logger.info("Respuesta Bancard: status=%s headers=%s body=%s",
+                    res_bancard.status_code, dict(res_bancard.headers), res_bancard.text)
 
         bancard_json = None
         try:
             bancard_json = res_bancard.json()
-            print("JSON:", bancard_json)
+            logger.info("Bancard JSON: %s", bancard_json)
         except Exception as e:
-            print("JSON ERROR:", str(e))
-        print("===================================\n")
+            logger.warning("Bancard respuesta no es JSON: %s", str(e))
 
-        # 7. error bancard
-        if res_bancard.status_code != 200:
-            return {
-                "message": "No se pudo confirmar la venta",
-                "bancard_status": res_bancard.status_code,
-                "bancard_response": res_bancard.text,
-                "bancard_json": bancard_json
+        # 7. pago satisfactorio → activar relé y confirmar venta
+        if res_bancard.status_code == 200:
+            if APP_PLATFORM == "raspberry":
+                logger.info("Activando relé: fila=%s columna=%s modo=%s", fila, columna, MODO_RELES)
+                try:
+                    if MODO_RELES == 1:
+                        activar_espilar_en_high(fila, columna, ESPIRAL_TIEMPO_SEGUNDOS)
+                    else:
+                        activar_espiral_en_low(fila, columna, ESPIRAL_TIEMPO_SEGUNDOS)
+                    logger.info("Relé activado correctamente: fila=%s columna=%s", fila, columna)
+                except Exception as e:
+                    logger.error("Error al activar relé (fila=%s columna=%s): %s", fila, columna, str(e))
+
+            payload_success = {
+                "metodo_pago": metodo_pago,
+                "estado": "A"
             }
 
-        # 8. hardware raspberry
-        if APP_PLATFORM == "raspberry":
-            if MODO_RELES == 1:
-                activar_espilar_en_high(fila, columna, ESPIRAL_TIEMPO_SEGUNDOS)
-            else:
-                activar_espiral_en_low(fila, columna, ESPIRAL_TIEMPO_SEGUNDOS)
+            res_update_vending = session.put(
+                API_URL + "/ventas/" + vending_id,
+                json=payload_success,
+                timeout=DEFAULT_TIMEOUT
+            )
 
-        # 9. actualizar venta
-        payload_success = {
-            "metodo_pago": metodo_pago,
-            "estado": "A"
+            try:
+                return res_update_vending.json()
+            except Exception:
+                return {
+                    "message": "Venta actualizada pero respuesta no es JSON",
+                    "raw": res_update_vending.text
+                }
+
+        # 8. pago fallido → no activar relé
+        logger.warning("Pago Bancard no satisfactorio (vending_id=%s status=%s): %s",
+                       vending_id, res_bancard.status_code, res_bancard.text)
+        return {
+            "message": "No se pudo confirmar la venta",
+            "bancard_status": res_bancard.status_code,
+            "bancard_response": res_bancard.text,
+            "bancard_json": bancard_json
         }
 
-        res_update_vending = session.put(
-            API_URL + "/ventas/" + vending_id,
-            json=payload_success,
-            timeout=DEFAULT_TIMEOUT
-        )
-
-        try:
-            return res_update_vending.json()
-        except Exception:
-            return {
-                "message": "Venta actualizada pero respuesta no es JSON",
-                "raw": res_update_vending.text
-            }
-
     except requests.exceptions.Timeout:
+        logger.error("Timeout en request a Bancard (vending_id=%s)", vending_id)
         return {"message": "Timeout contra servidor de Bancard"}
 
     except Exception as e:
+        logger.exception("Error inesperado en confirm_vending_card (vending_id=%s): %s", vending_id, str(e))
         return {"message": str(e)}
