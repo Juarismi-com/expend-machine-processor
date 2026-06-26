@@ -10,6 +10,8 @@ logger = logging.getLogger(__name__)
 
 # Constantes
 DEFAULT_TIMEOUT = 20
+QR_TIMEOUT = 90      # QR requiere que el usuario escanee, necesita más tiempo
+TARJETA_TIMEOUT = 60 # tarjeta requiere que el usuario acerque/inserte, necesita más tiempo
 ESPIRAL_TIEMPO_SEGUNDOS = 5
 
 # Creamos una sesión HTTP reutilizable con reintentos automáticos
@@ -61,6 +63,7 @@ def get_vending_by_id(vending_id):
         return {'error': str(e)}
 
 def _activar_rele(fila, columna):
+    logger.info("_activar_rele llamado: fila=%s columna=%s platform=%s", fila, columna, APP_PLATFORM)
     if APP_PLATFORM == "raspberry":
         logger.info("Activando relé: fila=%s columna=%s modo=%s", fila, columna, MODO_RELES)
         try:
@@ -71,6 +74,8 @@ def _activar_rele(fila, columna):
             logger.info("Relé activado correctamente: fila=%s columna=%s", fila, columna)
         except Exception as e:
             logger.error("Error al activar relé (fila=%s columna=%s): %s", fila, columna, str(e))
+    else:
+        logger.warning("Relé NO activado: APP_PLATFORM='%s' (debe ser 'raspberry')", APP_PLATFORM)
 
 def _confirmar_venta(vending_id, metodo_pago):
     payload_success = {"metodo_pago": metodo_pago, "estado": "A"}
@@ -84,14 +89,14 @@ def _confirmar_venta(vending_id, metodo_pago):
     except Exception:
         return {"message": "Venta actualizada pero respuesta no es JSON", "raw": res.text}
 
-def _bancard_post(url, payload):
+def _bancard_post(url, payload, timeout=DEFAULT_TIMEOUT):
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
         "User-Agent": "PostmanRuntime/7.36.0"
     }
     logger.info("Enviando request a Bancard: url=%s payload=%s", url, payload)
-    res = requests.post(url, json=payload, headers=headers, timeout=DEFAULT_TIMEOUT)
+    res = requests.post(url, json=payload, headers=headers, timeout=timeout)
     logger.info("Respuesta Bancard: status=%s body=%s", res.status_code, res.text)
     return res
 
@@ -126,7 +131,7 @@ def _confirm_vending_qr(vending_id, fila, columna, monto, metodo_pago):
         "monto": monto,
         "montoVuelto": 0
     }
-    res = _bancard_post(BANCARD_API_URL + "/pos/venta-qr", payload)
+    res = _bancard_post(BANCARD_API_URL + "/pos/venta-qr", payload, timeout=QR_TIMEOUT)
 
     if res.status_code == 200:
         _activar_rele(fila, columna)
@@ -147,7 +152,7 @@ def _confirm_vending_tarjeta(vending_id, fila, columna, monto, metodo_pago):
         "monto": monto,
         "montoVuelto": 0
     }
-    res_paso1 = _bancard_post(BANCARD_API_URL + "/pos/venta-ux", payload_paso1)
+    res_paso1 = _bancard_post(BANCARD_API_URL + "/pos/venta-ux", payload_paso1, timeout=TARJETA_TIMEOUT)
 
     if res_paso1.status_code != 200:
         logger.warning("Paso 1 tarjeta fallido (vending_id=%s status=%s): %s",
