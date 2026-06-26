@@ -17,7 +17,7 @@ def get_slot_by_slot_id(slot_num):
 
         response.raise_for_status()
 
-        # Verificar que el servidor realmente respondió JSON
+        # Verificar que el servidor devolvió JSON
         content_type = response.headers.get("Content-Type", "")
         if "application/json" not in content_type.lower():
             return jsonify({
@@ -27,7 +27,7 @@ def get_slot_by_slot_id(slot_num):
                 "body": response.text
             }), 502
 
-        # Intentar convertir a JSON
+        # Convertir la respuesta a JSON
         try:
             data = response.json()
         except ValueError:
@@ -54,6 +54,18 @@ def get_slot_by_slot_id(slot_num):
                 "error": "Datos de slot incompletos",
                 "response": data
             }), 500
+
+        # ===========================
+        # DEBUG
+        # ===========================
+        print("========================================")
+        print(f"[DEBUG] Slot solicitado : {slot_num}")
+        print(f"[DEBUG] Config recibida : {config}")
+        print(f"[DEBUG] Fila           : {fila} ({type(fila).__name__})")
+        print(f"[DEBUG] Columna        : {columna} ({type(columna).__name__})")
+        print(f"[DEBUG] Plataforma     : {APP_PLATFORM}")
+        print(f"[DEBUG] Modo relés     : {MODO_RELES}")
+        print("========================================")
 
         if APP_PLATFORM == "raspberry":
             if MODO_RELES == 1:
@@ -100,6 +112,11 @@ def get_slot_by_slot_id(slot_num):
         }), 502
 
     except Exception as e:
+        print("========================================")
+        print("[ERROR] Excepción inesperada")
+        print(str(e))
+        print("========================================")
+
         return jsonify({
             "error": "Error inesperado",
             "details": str(e)
