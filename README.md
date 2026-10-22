@@ -18,8 +18,68 @@ $ pip3 install -r ./requirements.txt
 ## Para ejecutarlo desde rasperry 
 $ pip3 install -r ./requirements-pi.txt
 
-## Inicializar la base de datos, luego de activar el .env
+## Aplicar migraciones manualmente (tambien se aplican solas al iniciar la app)
 $ flask init-db
+```
+
+### Base de datos local y migraciones
+- La base sqlite queda en `DATABASE_PATH` (por defecto `db/expend_local.db`, ignorada por git).
+- Al iniciar la app se aplican solo las migraciones pendientes de `database/migrations/*.sql`
+  (quedan registradas en la tabla `schema_migrations`, las ya aplicadas no se tocan).
+- Para cambiar el esquema agregar un archivo nuevo, ej. `0003_descripcion.sql`. No editar los ya aplicados.
+
+### Stock local
+El stock vive en la maquina (tabla `stock_slots`). Cada `STOCK_SYNC_INTERVAL` segundos:
+1. **pull** `GET {API_URL}/maquinas/{MACHINE_ID}/stock-sync`: actualiza producto, precio y fila/columna
+   de cada slot y aplica las reposiciones pendientes (tipo `R` suma, tipo `A` ajusta el stock al valor).
+   El stock remoto solo se toma la primera vez que aparece un slot.
+2. **push** `PUT {API_URL}/maquinas/{MACHINE_ID}/stock-sync`: envia el stock local y confirma las reposiciones aplicadas.
+
+Sin conexion se sigue vendiendo con el stock local y se reintenta en el proximo ciclo.
+
+### Configuracion GPIO (fila/columna)
+La fila/columna de cada slot (pines BCM de los reles) se configura en el admin
+(Maquina -> Configuracion) y la maquina la descarga en cada sync, igual que producto y precio.
+- `GET /slots/config` configuracion descargada de todos los slots
+- `GET /slots/<slot_num>` prueba el slot con esa configuracion (sin ir a la api)
+- `GET /slots/<fila>/<columna>` prueba directa de un par de pines
+
+En el kiosko: menu "Configuración GPIO" (ver, sincronizar ahora y probar).
+
+### Ventas locales
+La venta se registra y ejecuta completa en la maquina (tabla `ventas_locales`), sin llamar a la api:
+1. `POST /vending/ {slot_num}` valida stock/producto/precio locales y crea la venta `P`.
+2. `PATCH /vending/<id>/<qr|ux>` reserva el stock (estado `E`), cobra con el POS, despacha,
+   descuenta el stock local y deja la venta `A` (o `R` si el pago falla).
+3. El sync sube las ventas terminadas a `POST {API_URL}/maquinas/{MACHINE_ID}/ventas-sync`
+   (idempotente por `uuid`). Ventas `P`/`E` sin terminar en 15 min pasan a `C`.
+
+El sync no bloquea: corre en su propio hilo, las llamadas http van fuera de transacciones y
+`POST /stock/sync` responde `{"en_curso": true}` si ya hay uno corriendo. Tras cada venta se
+pide un sync inmediato en segundo plano. `GET /vending/` lista las ultimas ventas locales.
+
+Variables nuevas en `env.py` (opcionales):
+```py
+DATABASE_PATH = "db/expend_local.db"
+STOCK_SYNC_INTERVAL = 60  # segundos, 0 deshabilita el sync
+```
+
+Endpoints:
+- `GET /stock/` stock local de todos los slots
+- `GET /stock/<slot_num>` stock local de un slot
+- `POST /stock/sync` fuerza un ciclo de sincronizacion (ventas + stock)
+
+### Probar localmente (stock + sync + migraciones)
+Levanta MySQL (docker), `expend-api-node` (node), un POS falso y el processor con una configuracion
+de prueba (`scripts/local_test/test_env.py`, no toca `env.py`), corre los escenarios y baja todo.
+Requiere docker, node y `npm install` en `../expend-api-node/app`.
+```sh
+$ .venv/bin/python scripts/local_test/e2e_stock.py          # corre las verificaciones
+$ .venv/bin/python scripts/local_test/e2e_stock.py --keep   # y deja todo levantado para probar a mano
+$ .venv/bin/python scripts/local_test/e2e_stock.py --serve  # solo levanta el entorno con datos de demo (sin verificaciones)
+
+# solo el processor contra otra api (variables TEST_API_URL, TEST_MACHINE_ID, TEST_POS_URL...)
+$ TEST_API_URL=http://localhost:8000 .venv/bin/python scripts/local_test/run_processor.py 5001
 ```
 
 ### Ejecutar el proyecto

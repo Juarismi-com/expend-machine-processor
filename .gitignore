@@ -178,3 +178,5 @@ env.py
 
 cert.pem
 key.pem
+# datos de pruebas locales
+scripts/local_test/.data/

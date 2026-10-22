@@ -3,27 +3,26 @@ from flask_cors import CORS
 from routes.vending_route import bp as vending_bp
 from routes.slot_route import slot_bp
 from routes.dispenser_route import bp as dispenser_bp
-from database.conn import get_db
+from routes.stock_route import bp as stock_bp
+from database.conn import close_db
+from database.migrate import run_migrations
+from services.stock_sync_service import start_stock_sync
 from env import APP_DEBUG, AUTH_TOKEN
 import subprocess
 import re
 import os
 
 app = Flask(__name__)
-app.config['DATABASE'] = 'expend_db.sql'
+app.teardown_appcontext(close_db)
 
-
-def init_db():
-    db = get_db()
-    with app.open_resource('./database/schema.sql') as f:
-        db.executescript(f.read().decode('utf8'))
-    print("Base de datos inicializada")
+# Al iniciar aplica solo las migraciones pendientes (database/migrations)
+run_migrations()
 
 
 @app.cli.command('init-db')
 def init_db_command():
-    """Inicializa la base de datos."""
-    init_db()
+    """Aplica las migraciones pendientes de la base de datos."""
+    run_migrations()
 
 
 # Configuracion de las rutas
@@ -39,6 +38,12 @@ def handle_options():
 app.register_blueprint(vending_bp, url_prefix="/vending")
 app.register_blueprint(slot_bp, url_prefix="/slots")
 app.register_blueprint(dispenser_bp, url_prefix="/dispensers")
+app.register_blueprint(stock_bp, url_prefix="/stock")
+
+# Sincroniza el stock local con la api cada STOCK_SYNC_INTERVAL segundos.
+# Con --debug el reloader carga la app dos veces: solo arranca en el proceso hijo
+if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    start_stock_sync()
 
 # Muestra el listado de rutas configuradas 
 with app.app_context():
